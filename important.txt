@@ -1,0 +1,2436 @@
+STACKS
+Nextjs 15
+Clerk
+Typescript
+Tailwindcss 
+Shadcn/ui
+Aceternity ui
+Drizzle ORM
+Postgresql
+Google Gemini
+Framer Motion
+
+STUFF TO LEARN
+camera integration
+prompt engineering 
+Database Management
+user Authentication
+Server side rendering
+Animation
+
+IMPORTANT SHORT-KEYS AND NOTES
+    Double tap left shift to locate mouse
+    W + Shift + V = Advanced paste
+    Ctrl + B to collapse sidebar
+    Ctrl + + or Ctrl + - to zoom in and out
+    Ctrl + J to collapse terminal when not using
+    Ctrl + Shift + P to open command palette
+    reduce as many distractions as possible
+    Always show any short-key used on screen briefly so viewers can LEARN
+
+
+SETTING UP
+create a folder and name it
+open the folder in cmd and run 'npx create-next-app@latest', name your app and select yes for everything apart from alias
+open your app folder in vscode or cursor and checkout the codebase
+run 'npm run dev' to start the app
+remove placeholder ui in src/app/page.tsx
+install shadcn ui(no need to create new project)
+install button and dark mode from shadcn ui
+wrap the theme provider to root layout
+add mode toggle component to ui folder and theme provider to providers folder
+install dropdown menu from shadcn
+add the mode toggle to page.tsx in the app dir to test
+test the button also
+you can change the primary color throughtout the app at tailwind.config.ts under themes/extend/colors/primary and secondary
+ignore your env in .gitignore file (will come handy later)
+
+Fonts
+import { DM_Sans } from "next/font/google"; in src\app\layout.tsx
+add const font = Outfit({ subsets: ["latin"] });
+then add className={font.className} to the body tag
+
+AUTH
+display auth layout on a drawing board, timestamp: 16:51
+sign up for clerk, create a new project and name it
+install clerk on the project from clerk docs
+copy the secret key from clerk and paste it in a .env.local file
+create a middleware.ts file and paste the middleware code from clerk docs
+wrap you root layout in clerk provider
+open clerk docks and navigate to middleware, and set up protected routes
+ran into an error with createRouteMatcher, use cursor chat with the @web tag to fix it
+turns out it was just an import of createRouteMatcher from '@clerk/nextjs/server'
+remvove the export default clerkMiddleware from middleware.ts and paste the auth().protect() code from the docs
+no changes in our localhost server because we have protected the route yet
+create a new route app/dashboard/layout.tsx and tsrafce(coming from es7+ react ext) install neccesary ext
+set in props as {children: React.ReactNode} and in the layout return {props.children}
+create a new route app/dashboard/page.tsx and tsrafce
+goto localhost:3000/dashboard and you will be redirected to sign in(removing it from middleware.ts will make ir visible)
+navigate to custom signin/signup page on clerk docs
+create app/(auth)/sign-up/[[...sign-up]]/page.tsx and paste in the code from the docs
+repeat for signin
+update the .env.local file with the secret sign in keys
+check localhost server and the auth domain now belong to us
+
+#WIP clerk elements
+    goto clerk elements docs and run npm install @clerk/elements in terminal
+    make sure that your moduleResolution in tsconfig.json is set to bundler
+    replace the <signIn/> drop in component with:
+        <SignIn.Root>
+            [Sign In Root]
+        </SignIn.Root>
+    replace [Sign In Root] with:
+        <SignIn.Step name="start">
+            <h1>Sign in to your account</h1>
+            <Clerk.Connection name="google">
+                Sign in with Google
+            </Clerk.Connection>
+            <Clerk.Connection name="github">
+                Sign in with Github
+            </Clerk.Connection>
+
+            <Clerk.Field name="identifier">
+                <Clerk.Label>Email</Clerk.Label>
+                <Clerk.Input />
+                <Clerk.FieldError />
+            </Clerk.Field>
+
+            <SignIn.Action submit>Sign In with Email</SignIn.Action>
+        </SignIn.Step>
+    text is white so wrap <signIn.root> in a div with className="text-black dark:text-white" switch to light mode to see text
+    also edit the topmost section className="bg-white dark:bg-black text-black dark:text-white"
+    next pass <Clerk.Icon /> into both connections(google and github) and it'll read the parent and add the icon accordingly:
+        <Clerk.Connection name="google">
+                <Clerk.Icon />
+                Sign in with Google
+        </Clerk.Connection>
+    off the rip we can see that we can sign in with google already(dunno why github isn't working)(google sign in has stopped working too lol)
+    add this directly below the </SignIn.Step>:
+        <SignIn.Step name="verifications">
+            <SignIn.Strategy name="email_code">
+                <h1>Check your email</h1>
+                <p>We sent a code to <SignIn.SafeIdentifier />.</p>
+
+                <Clerk.Field name="code">
+                    <Clerk.Label>Email code</Clerk.Label>
+                    <Clerk.Input />
+                    <Clerk.FieldError />
+                </Clerk.Field>
+
+                <SignIn.Action submit>Continue</SignIn.Action>
+            </SignIn.Strategy>
+        </SignIn.Step>
+    testing with email, also does not work(gee i wonder why)
+
+    Stlyling with Ace Signup component
+    go to the signup-form in ace docs, install the dependencies and add:
+        boxShadow: {
+            input: `0px 2px 3px -1px rgba(0,0,0,0.1), 0px 1px 0px 0px rgba(25,28,33,0.02), 0px 0px 0px 1px rgba(25,28,33,0.08)`,
+        }, 
+    to tailwind.config.ts in extend under colors
+    add src\components\ui\input.tsx and src\components\ui\label.tsx and paste the codes from ace docs
+    add the folllowing imports:
+        import React from "react";
+        import { Label } from "@/components/ui/label";
+        import { Input } from "@/components/ui/input";
+        import { cn } from "@/lib/utils";
+        import {
+        IconBrandGithub,
+        IconBrandGoogle,
+        IconBrandOnlyfans,
+        } from "@tabler/icons-react";
+
+    add the code snippet of the sign up form, comment out your clerk component and compare the form from ace
+    remove the OF button and sitch google above github
+
+
+goto hyperui.dev, find auth ui, and copy the jsx code
+go to signin remove the <SignIn />; with the code from hyperui, and replace the form tag with <SignIn />;
+also change all 'class' to 'classname', also replace all 'for' to 'htmlFor'(from cursor chat)
+our signin page now shows as expected
+test out cursor ctrl+k to edit page, use https://emojidb.org/ for emoji on sign in
+sign in, can' sign out
+add userbutton tag to dashboard and import from clerk
+check out user profile 
+
+HEADER/NAVBAR
+create a folder and name it '_components', the '_' helps so nextjs dosen't consider it as a route, and it helps with  keeping a neet folder structure, imagine seeing all these confusing code and with scattered folders and files,(brother uhh )
+create a file and name it header.tsx, tsrafce into it and name it 'Header' remove the props
+then go to dashboard/layout.tsx, add <Header /> on top of children and import it
+add my-20 to the className in the {props.children} div in layout
+create a logo to logo.com, download in svg and save it as logo.svg in public dir (svg view ext)
+add the logo to the header component
+wrap image in a link like this: <Link href="/">
+                                    <Image src={'/logo.svg'} alt="logo" width={160} height={120} />
+                                </Link>
+
+{}
+
+add menu items in list timestamp: 36:32, add userbutton
+add classname styling
+
+
+install nav-menu from shadcn
+paste sample code from shadcn into header.tsx and integrate them
+idk where component/icons is coming from, so we consult cursor
+create icons.tsx in component/ui
+convert your logo to icon and replace (generate icon.tsx with cursor chat)
+??Stuck on navbar centering, turns out its from the header and it follows suit from the tut
+successfully merged both files, awaiting to check output, turned out to be the width and height of the logo(should be width={160} height={120})
+add hidden md:flex to the header component to make it responsive
+at the end, everything should look like src\app\dashboard\_components\header.tsx
+
+
+WORKFLOW
+display workflow logic on a drawing board, timestamp: 41:05
+
+BACKEND
+display backend logic on a drawing board, timestamp: 42:35
+sign up for drizzle orm, using neon db, copy and install drizzle terminal
+we'll run into a problem so chnage the verion of react in package.json from 18 or whatever to 18.3.1(cursor chat)
+run npm i to reinstall all packages and install drizzle again
+install drizzle kit on terminal
+create folder 'utils' and file 'db.ts', paste the corresponding code from drizzle docs
+create a new project on neon and new database on neon
+copy database link and paste it in .env.local with NEXT_PUBLIC_DRIZZLE_DB_URL=url from neon db, put url in qoutes
+copy the env name and replace the one in db.ts
+comment out the last line of code in db.ts
+head on to drizzle kit in the docs
+create a new file drizzle.config.ts in root dir and paste code from drizzle docs
+replace the url with the url env variable
+create a new file and name it 'schema.ts' in utils
+set up the schema file with neccesary entries
+import * as schema from './schema' in db.ts and add it to the export
+update schema in drizzle.config.ts with schema: "./utils/schema.ts",
+update the scripts in package.json with "db:push": "npx drizzle-kit push" and "db:studio": "npx drizzle-kit studio"
+chnage env.local to .env
+run npm run db:push to push the schema to the database and confirm at neon db
+
+AI INTEGRATION  
+display workflow logic on a drawing board, timestamp: 56:46
+create file add-new-interview.tsx in /app/dashboard/_components and tsrafce
+install drawer from shadcn, yap a lil about vaul, emil kowalski
+import drawer stuff and replace the code in add-new-interview.tsx, and wrap it ina a div
+edit dashboard/layout.tsx; put the children in a new div with classname 'mx-5 md:mx-20 lg:mx-36'
+edit dashboard/page.tsx; add the h2 and p tags with classname 'text-2xl font-bold' and 'text-gray-500' timestamp 1:00:02
+add <add-new-interview /> in dashboard/page.tsx with classname 'grid grid-cols-1 md:grid-cols-3 my-5'
+in add-new-interview.tsx, wrap <DrawerTrigger>+ Add New</DrawerTrigger> in a div with classname 'p-10 border rounded-lg bg-secondary hover:scale-105 hover:shadow-md cursor-pointer transition-all'
+in <DrawerTrigger>+ Add New</DrawerTrigger>, wrap the child in adiv with classname 'font-bold text-lg text'
+add input and text area from shadcn
+drawerclose should contain this: <DrawerClose>
+                                    <div>
+                                        <Button>Submit</Button>
+                                        <Button variant="outline">Cancel</Button>
+                                     </div>
+                                 </DrawerClose>
+                        so nextjs won't tell us we are nesting a button in a button
+
+add this: <div className='font-bold text-2xl flex justify-center items-center'>
+                <h2>Create New Interview</h2>
+            </div>  
+                            to the drawer title
+
+and this:                   <form>
+                                <div className='font-bold flex justify-center items-center'>
+                                    <h2>Fill in the required fields to create a new interview.</h2>
+                                </div>
+                                <div className='mt-7 my-2'>
+                                    <label>Job Role/Position*</label>
+                                    <Input placeholder='Ex. Full Stack Developer' required />
+                                </div>
+                                <div className='my-3'>
+                                    <label>Job Description/Tech Stacks*</label>
+                                    <Textarea placeholder='Ex. Javascript, Python, React, Node, Express, MongoDB, etc.' required />
+                                </div>
+                                <div className='mt-7 my-2'>
+                                    <label>Years of Experience</label>
+                                    <Input placeholder='5...' type='number' max='25' required />
+                                </div>
+                                <div className='flex justify-center gap-5'>
+                                    <Button type='submit'>Start Interview</Button>
+                                </div>
+                            </form>
+                            to the drawer description annd explain the code
+#WIP drawer buttons, timestamp: 1:11:30
+
+//more efficient way open and close the drawer
+//import { useState } together with react from react
+//add drawer content directly under the + Add New div
+//remove the DrawerTrigger tag
+//add 'const [isOpen, setIsOpen] = useState(false)' just before the return function
+//set drawer tag with 'open={isOpen}'
+//confirm that add-new-interview.tsx has 'use client'
+//add onClick={() => setIsOpen(true)} tag to the + Add New div
+
+add these: const [jobPosition,setJobPosition]=useState(\');
+             const [jobDesc,setJobDesc]=useState('');
+             const [jobExperience,setJobExperience]=useState('');
+             inside AddNewInterview function just right above the return()
+
+add these: onChange={(event) => setJobPosition(event.target.value)}
+           onChange={(event) => setJobDesc(event.target.value)}
+           onChange={(event) => setJobExperience(event.target.value)}
+           to each input for each field respectively as tags in the form
+
+add these: const onSubmit=()=>{
+        console.log('jobPosition', jobDesc, jobExperience)
+    }
+    under the usestate constants
+
+then add onSubmit={onSubmit} tag to the form
+now we can check console in our browser to see if our dat is being passed correctly,
+but it doesn't(it actually does if you notice it quick enough), but maily it just refreshes your page
+to counter this we need to add 'e' for event in the onSubmit constant, and call it
+by editing the onSubmit to: const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+                                e.preventDefault();
+                                console.log('jobPosition', jobDesc, jobExperience)
+                            }
+#WIP butt, the modal still remains, we need to fix that later, now we can see our data in the console
+
+TIME TO ACTUALLY SET UP GOOGLE Gemini
+now head to ai.google.dev and sign in if not already
+scroll down and click get api key in google studio(or whatever)
+check out pricing
+go to studio and create new api key, copy key and store in .env in the variable 'NEXT_PUBLIC_GEMINI_API_KEY'
+goto promt and test this prompt:
+                                Given the following variables:
+                                1. Job Title: {job_title}
+                                2. Job Description (stacks): {job_description}
+                                3. Years of Experience: {years_of_experience}
+
+                                Create 5 job interview questions with difficulty levels based on the provided variables. The higher the years of experience or the more complex the job description, the more difficult the questions should be. Provide the questions along with their answers in JSON format.
+go to code, select Javascript
+install the generative AI SDK
+copy the code block up to the utils/geminiAi.ts
+switch the default env variable with ours 'NEXT_PUBLIC_GEMINI_API_KEY'
+why NEXT_PUBLIC all the time? well client side rendering, maybe a yap session would suffice here
+remove history variable in async function run(), because we don't need to keep history of interviews with the model
+remove const result
+set safety settings: // safetySettings: Adjust safety settings
+                         // See https://ai.google.dev/gemini-api/docs/safety-settings
+                        since we are not buidling orange youtube
+scroll to Gemini API SDKs, select node.js and copy the safetySetting constant, then call it in async function run() just under generationConfig
+since its just hate speech and harrasment filters, we can add sexually explicit and dangerous content filters too,
+copy the filters from https://ai.google.dev/gemini-api/docs/safety-settings
+duplicate two filters in the safetySetting constant and replace with the copied filters
+finally remove the async function run() wrap and export the chat session constant, no need to keep run(); also
+add this: "const InputPromt= Given the following variables: Job Title: {job_title}, Job Description (stacks): {job_description}, Years of Experience: {years_of_experience}. Create 5 job interview questions with difficulty levels based on the provided variables. The higher the years of experience or the more complex the job description, the more difficult the questions should be. Provide the questions and answers in JSON format."
+to the onSubmit constant in AddNewInterview
+replace {job_title}, {job_description}, {years_of_experience} with "+jobPosition+", "+jobDesc+", "+jobExperience+" respectively
+replace '5' in the prompt with '"+process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT+"' 
+go to the env file and add 'NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT=5', so we can easily change the number of questions from the server
+add this line under the InputPrompt constant: 'const result= await chatSession.sendMessage(InputPrompt);'
+import chat from the gemini sdk, and add async to the onSubmit constant: 'const onSubmit = async(e: React.FormEvent<HTMLFormElement>) =>'
+add this console log: 'console.log(result.response.text());' after the result constant
+save everything and head to browser console, notice the hydration error and try to explain if(if you can)
+test the start interview, and checkout the response in the console, explain how the input determines the difficulty
+the '```json' at the start and '```' end of the result are kinda not good and will most likely throw an error when trying to parse
+add this: 'const MockJsonResp=(result.response.text()).replace('```json', '').replace('```','')' between the result constant and result console
+replace 'result.response.text()' in the console.log to 'JSON.parse(MockJsonResp)'
+to show loading while the ai is working we need to set a loading useState
+add: 'const [loading, setLoading] = useState(false)' after the jobExperience constant
+let: 'setLoading(true)' be the first thing un the onSubmit constant, 'setLoading(false)' should also be the last thing
+also change the submit button to: <Button type='submit' disabled={loading}>
+                                        {loading ?
+                                            <>
+                                                <LoaderCircle className='animate-spin' /> 'Generating with AI...'
+                                            </> : 'Create Interview'}
+                                    </Button>
+now test the interview again, ran into an error, debugged with cursor, we got this new onSubmit constant(actually cursor was no help and had to fix it with my human brain):
+   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        setLoading(true)
+        e.preventDefault();
+        console.log('jobPosition', jobDesc, jobExperience)
+
+        const InputPrompt = "Given the following variables: Job Title: " + jobPosition + ", Job Description (stacks): " + jobDesc + ", Years of Experience: " + jobExperience + ". Create " + process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT + " job interview questions with difficulty levels based on the provided variables. The higher the years of experience or the more complex the job description, the more difficult the questions should be. Provide the questions and answers in JSON format."
+        const result = await chatSession.sendMessage(InputPrompt);
+        const MockJsonResp = (result.response.text()).replace('```json', '').replace('```', '')
+        const parsedResponse = JSON.parse(MockJsonResp);
+        console.log(parsedResponse);
+        setLoading(false)
+    }
+
+if this error isn't encountered, then still find a way to use the above code
+test the interview again, should get a parsed json with no errors
+add 'const [jsonResponse, setJsonResponse] = useState([])' under the loading constant
+add 'const resp = await db.insert(MockInterview)', db comes from utils and MockInterview comes from our schema, ensure they are imported
+install uuid with 'npm install --save-dev @types/uuid' (explain what uuid does)
+update const resp to: const resp = await db.insert(MockInterview).values({
+            mockId: uuidv4(),
+            jsonMockResp:parsedResponse,
+            jobDesc:jobDesc,
+            jobPosition:jobPosition,
+            jobExperience:jobExperience,
+            createdBy: user?.primaryEmailAddress?.emailAddress ?? '',
+            createdAt: moment().format('DD-MM-YYYY')
+        }).returning({mockId:MockInterview.mockId})
+
+add: 'const {user}=useUser();' after the jsonResponse constant, import useUser from react
+install moment for timestand: npm install moment and import with 'import moment from 'moment''
+add 'console.log("Inserted ID:", resp)' after const resp
+wrap const resp in an if statement to look like this:  if (MockJsonResp) {
+            const resp = await db.insert(MockInterview).values({
+                mockId: uuidv4(),
+                jsonMockResp: parsedResponse,
+                jobDesc: jobDesc,
+                jobPosition: jobPosition,
+                jobExperience: jobExperience,
+                createdBy: user?.primaryEmailAddress?.emailAddress ?? '',
+                createdAt: moment().format('DD-MM-YYYY')
+            }).returning({ mockId: MockInterview.mockId })
+
+            console.log("Inserted ID:", resp)
+        }
+        else {
+            console.log("Error inserting ID")
+        }
+
+test out the interview to view that mockId has successfully been assigned and sent to schema
+launch the drizzle studio and check the new entries in database
+we're all done, what is remaining is close the drawer when resp has been recieved since we'll need redirect to the interview page
+set 'const [openDrawer, setOpenDrawer] = useState(false)' above the jobPositionconstant
+add this to the drawer tag: 'open={openDrawer}'
+change the DrawerTrigger to: <DrawerTrigger>
+                        <div className='p-10 border rounded-lg bg-secondary hover:scale-105 hover:shadow-md cursor-pointer transition-all'>
+                           <div className='font-bold text-lg text'>+ Add New</div>
+                        </div>
+                    </DrawerTrigger>
+
+comment out the openDrawer usestate to show that you can click anywhere on the button to open drawer, instead of just the + Add New, after which you can uncomment
+then add 'onClick={() => setOpenDrawer(true)}' to the parent div in the DrawerTrigger, this will now open the drawer when clicked
+add 'onClick={() => setOpenDrawer(false)}' to the cancel button
+
+#WIP minor issue: dragging the drawer down does not let the logic know that drawer has been closed, hence it won't open again till the page is refreshed
+
+add this: if (resp) {
+                setOpenDrawer(false)
+            }
+            after the console.log("Inserted ID:", resp) line before the 'else' tag to close the drawer
+test out the add interview, and ensure it closes after response has been recieved and stored in database
+
+
+TOAST
+Toast after creating interview and closing broswer
+run npx shadcn-ui@latest add sonner
+import { Toaster } from "@/components/ui/sonner" in src\app\dashboard\layout.tsx
+and <Toaster /> under {props.children}
+update the resp if statement with toast:
+    if (resp) {
+                setOpenDrawer(false)
+                router.push('dashboard/interview/' + resp[0]?.mockId)
+                toast("Interview Questions Generated", {
+                    description: moment().format('DD-MM-YYYY'),
+                })
+            }
+and import { toast } from "sonner"
+
+
+
+CREATE INTERVIEW PAGE
+in the dashboard folder we create a new folder 'interview' and the set a dynamic route(explain what dynamic route is) in the interview foler '[interviewId]' then create a page.tsx in it, tsrafce and call it 'Interview'
+goto http://localhost:3000/dashboard/interview/{random numbers} to show the page
+
+now back to the if statement we created if response is gottten, we need to route from there to the interview page
+add: 'const router=useRouter();' above the user constant and import useRouter from next/navigation
+add: 'router.push('dashboard/interview/'+resp[0]?.mockId)' under setOpenDrawer(false) in the if statement
+now we can replace our {random numbers} with a mockId from our drizzle studio
+
+in the interview page, set props to: type Props = {
+    params: {
+        interviewId: string
+    }
+}
+
+add a useEffect above the return function: useEffect(() => {
+        console.log(params)
+    }, [])
+import the useEffect with react from react, and since we are using a useEffect, we need to add 'use client' at the top of the page
+now head to browser console, refresh and check for interviewId, add .interviewId in the console log after params
+add : const GetInterviewDetails= async()=>{
+        const result=await db.select().from(MockInterview)
+        .where(eq(MockInterview.mockId,params.interviewId))
+    }
+after the use effect before the return function and import:
+    import { db } from '../../../../../utils/db'
+    import { MockInterview } from '../../../../../utils/schema'
+    import { eq } from 'drizzle-orm'
+
+and then add console.log(result); in the GetInterviewDetails constant
+then call GetInterviewDetails(); in the useEffect
+back to browser console in interview page, refresh and confirm the results being logged
+add 'const [interviewData, setInterviewData]=useState();' above the useEffect
+add 'setInterviewData(result[0]);' under console.log(result);
+it will through an error, but after debugging with cursor ai, we need to change 'const [interviewData, setInterviewData]=useState();' to 'const [interviewData, setInterviewData]=useState<typeof MockInterview.$inferSelect | undefined>();'
+show console.log(result[0]); and confirm it in the browswer console
+remove console.log(result[0]);
+change <div>Interview</div> to <div className='my-10 flex justify-center items-center'>
+            <h2 className='font-bold text-2xl'>
+                Let's Get Started
+            </h2>
+        </div>
+in the return function
+
+Web Camera Integration
+run npm install react-webcam
+add :       <div>
+                <Webcam />
+                <WebcamIcon className='h-72 my-7 w-full p-20 bg-secondary rounded-lg border'/>
+            </div>
+under the lets get started tag
+and import  Webcam  from 'react-webcam'
+import { WebcamIcon } from 'lucide-react'
+but we need to comment out <Webcam /> for now, because we only want to show the cam after user has accepted permissin, else show <WebcamIcon />
+we achieve this by adding the usestate: 'const [webCamEnabled, setWebCamEnabled] = useState(false);' under the interviewData constant
+
+3d-card effect from Aceternity ui
+add components/ui/3d-card.tsx and paste the code from Aceternity ui
+add these imports to the interview page: 
+import Image from "next/image";
+import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
+import Link from "next/link";
+
+wrap the webcam div to look like this:     
+        <div className='flex justify-center flex-col items-center'>
+               <div className='-mt-10'>
+                {webCamEnabled ? <CardContainer className="inter-var">
+                    <CardBody className="bg-gray-50 relative group/card  dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-auto rounded-xl p-6 border  ">
+                        <CardItem
+                            translateZ="50"
+                            className="text-xl font-bold text-neutral-600 dark:text-white"
+                        >
+                            Permissions Granted
+                        </CardItem>
+                        <CardItem
+                            as="p"
+                            translateZ="60"
+                            className="text-neutral-500 text-sm max-w-sm mt-2 dark:text-neutral-300"
+                        >
+                            You can now proceed to the Interview
+                        </CardItem>
+                        <CardItem translateZ="100" className="w-full mt-4">
+                            <Webcam
+                                onUserMedia={() => setWebCamEnabled(true)}
+                                onUserMediaError={() => setWebCamEnabled(false)}
+                                mirrored={true}
+                            />
+                        </CardItem>
+                        <div className="flex justify-between items-center mt-20">
+                            <CardItem
+                                translateZ={20}
+                                className="px-4 py-2 rounded-xl text-xs font-normal dark:text-white"
+                            >
+                                Grant now →
+                            </CardItem>
+                            <CardItem
+                                translateZ={20}
+                                as="button"
+                                className="px-4 py-2 rounded-xl bg-black dark:bg-white dark:text-black text-white text-xs font-bold"
+                            >
+                                Start Interview
+                            </CardItem>
+                        </div>
+                    </CardBody>
+                </CardContainer>
+                    :
+                    <>
+                        <CardContainer className="inter-var">
+                            <CardBody className="bg-gray-50 relative group/card  dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-auto rounded-xl p-6 border  ">
+                                <CardItem
+                                    translateZ="50"
+                                    className="text-xl font-bold text-neutral-600 dark:text-white"
+                                >
+                                    Let's Get Started
+                                </CardItem>
+                                <CardItem
+                                    as="p"
+                                    translateZ="60"
+                                    className="text-neutral-500 text-sm max-w-sm mt-2 dark:text-neutral-300"
+                                >
+                                    Grant Webcam and Microphone Permissions
+                                </CardItem>
+                                <CardItem translateZ="100" className="w-full mt-4">
+                                    <Image
+                                        src="/webcam.png"
+                                        height="1000"
+                                        width="1000"
+                                        className="h-60 w-full object-cover rounded-xl group-hover/card:shadow-xl"
+                                        alt="thumbnail"
+                                    />
+                                </CardItem>
+                                <div className="flex justify-between items-center mt-10">
+                                    <CardItem
+                                        translateZ={20}
+                                        className="px-4 py-2 rounded-xl text-xs font-normal dark:text-white"
+                                    >
+                                        Grant now →
+                                    </CardItem>
+                                    <CardItem
+                                        translateZ={20}
+                                        as="button"
+                                        className="px-4 py-2 rounded-xl bg-black dark:bg-white dark:text-black text-white text-xs font-bold"
+                                        onClick={() => setWebCamEnabled(true)}
+                                    >
+                                        Allow
+                                    </CardItem>
+                                </div>
+                            </CardBody>
+                        </CardContainer>
+                    </>
+                }
+            </div>
+        </div>
+and now it works as expected, won't be the same with what was copied from Aceternity ui
+mirrow the view by using 'mirrored={true}' under 'onUserMediaError={() => setWebCamEnabled(false)}
+
+NOT NEEDED ANYMORE
+    figma outile button from Aceternity ui
+    run npm i framer-motion clsx tailwind-merge react-element-to-jsx-string from Aceternity ui
+    add: 'shimmer: "shimmer 2s linear infinite"' in animations in tailwind.config.ts
+    also add: shimmer: {
+              from: {
+                backgroundPosition: "0 0",
+              },
+              to: {
+                backgroundPosition: "-200% 0",
+              },
+            },
+    to keyframes in tailwind.config.ts
+
+    create tailwindcss-buttons.tsx and paste the code from Aceternity
+    add this classname to the enable camera buttion: className='shadow-[0_0_0_3px_#000000_inset] px-6 py-2 bg-transparent border border-black dark:border-white dark:text-white text-black rounded-lg font-bold transform hover:-translate-y-1 hover:bg-transparent transition duration-400'
+NOT NEEDED ANYMORE
+
+goto browser and play round with the cam permissions
+
+now lets reflect the interview details set by the user, by dividing the screen, placing the camera at the right and info at the left
+above the camera div, add: 
+                <div className='my-10 flex flex-col gap-5'>
+                    <h2 className='text-lg'>
+                        <strong>
+                            Job Position/Role:
+                        </strong>{interviewData?.jobPosition}
+                    </h2>
+                    <h2 className='text-lg'>
+                        <strong>
+                            Job Description/Stacks:
+                        </strong>{interviewData?.jobDesc}
+                    </h2>
+                    <h2 className='text-lg'>
+                        <strong>
+                            Years of Experience:
+                        </strong>{interviewData?.jobExperience}
+                    </h2>
+                </div>
+
+nest both the camera div and info div in a div with className: className='grid grid-cols-1 md:grid-cols-2'
+further style the info div adding a new div with className: className='p-5 rounded-lg border flex flex-col gap-5' in it and nesting all the h2 tags in it
+
+lets add a following pointer to the 3d-card from Aceternity ui
+
+copy the code from the docs and paste into components/ui/following-pointer.tsx
+add addVariablesForColors, to the plugin settings in tailwind.config.ts file to look like:
+    plugins: [
+        require("tailwindcss-animate"),
+        addVariablesForColors,
+    ],
+
+add:
+function addVariablesForColors({ addBase, theme }: any) {
+  let allColors = flattenColorPalette(theme("colors"));
+  let newVars = Object.fromEntries(
+    Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+  );
+ 
+  addBase({
+    ":root": newVars,
+  });
+}
+
+in tailwind.config.ts file after const config before export default config;
+import flattenColorPalette from "tailwindcss/lib/util/flattenColorPalette"; into the tailwind.config.ts file
+it will throw an error because the OG docs method is for Javascript projects without typescript
+
+lastly create a tailwind.d.ts file in your root folder and add:
+declare module "tailwindcss/lib/util/flattenColorPalette" {
+  export default function flattenColorPalette(colors: object): object;
+}
+
+this will resolve any typescript import error encountered(solved this with cursor chat)
+
+after setting up the pointer animation code;
+import { FollowerPointerCard } from "@/components/ui/following-pointer"; into the interview page.tsx
+add the following constants as seen on the docs;
+
+const Content = {
+    author: "Samson Agbo",
+    authorAvatar: "/avatar.png",
+};
+
+const TitleComponent = ({
+    title,
+    avatar,
+}: {
+    title: string;
+    avatar: string;
+}) => (
+    <div className="flex space-x-2 items-center">
+        <Image
+            src="/avatar.png"
+            height="20"
+            width="20"
+            alt="thumbnail"
+            className="rounded-full border-2 border-white"
+        />
+        <p>{title}</p>
+    </div>
+);
+
+avatar.png is a test image, we will call from clerk username and image
+
+nest the 3d-card div(both webcam and non) with:
+                <FollowerPointerCard
+                    title={
+                        <TitleComponent
+                            title={Content.author}
+                            avatar={Content.authorAvatar}
+                        />
+                    }
+                >
+                    <div>
+                        //3d-card div(just use the code in your code base, rem added hover for light and dark and removed asbutton)
+                    </div>
+                </FollowerPointerCard>
+
+now the following pointer works with our name and image, next to call it from clerk
+import { useUser } from "@clerk/nextjs"; in interview page.tsx
+add this: const { user } = useUser(); below the webCamEnabled constant
+move the TitleComponent and Content constants into the main Interview constant and place them under GetInterviewDetails constant
+
+edit the content and TitleComponent constants:
+const Content = {
+        author: user?.firstName || "User",
+        authorAvatar: user?.imageUrl || "/avatar.svg",
+};
+
+src={user?.imageUrl || "/avatar.svg"} in TitleComponent
+
+with fall backs '||' incase
+
+add: 
+images: {
+    domains: ['img.clerk.com'],
+},
+to next.config.js to authorize and permit images from clerk images
+
+Wobble card from Aceternity ui
+download noise.webp from Aceternity UI docs and paste in public folder
+copy the wobble noise code from the docs and paste in components/ui/wobble-card.tsx
+import { WobbleCard } from "@/components/ui/wobble-card"; into interview page.tsx
+switch the div for the info from <div className='p-5 rounded-lg border flex flex-col gap-5'> to <WobbleCard className='p-5 rounded-lg border bg-[#1c4b82] flex flex-col gap-5'>
+the color bg-[#1c4b82] was added because it's similar to the logo i am using, feel free to change or set it to bg-secondary
+wobble card should be working fine now
+
+Info Under Wobble card
+add a div under the wobble card with className: className='p-5 border rounded-lg border-yellow-300 bg-yellow-100 dark:bg-yellow-700 dark:text-white'
+add this h2 inside the div:
+                            <h2 className='flex gap-2 items-center text-yellow-500'>
+                                <Lightbulb />
+                                <strong>
+                                    Hey there
+                                </strong>
+                            </h2>
+and import { Lightbulb, WebcamIcon } from 'lucide-react'
+
+goto .env and add NEXT_PUBLIC_INFORMATION="Please grant our model access to your webcam and microphone to initiate your AI-generated mock interview. In the free tier, you will answer 5 questions with difficulty levels based on your years of experience. At the end, you will receive a detailed report based on your responses. Note: We will never record or store your video for any reason, and you can disable webcam and microphone access at your discretion."
+add this h2 under the Lightbulb h2 and call in the variable we added in .env: <h2 className=''mt-3 text-yellow-500'>{process.env.NEXT_PUBLIC_INFORMATION}</h2>
+
+#WIP customize the info, remove it from the env and use some Aceternity styling or something
+#ACE Direction Aware hover
+#WIP convert logo to favicon
+#ACE Background Overlay Card propbaly on the + Add New button
+#ACE Bento Grid
+#ACE Glare Card for created interviews
+#ACE Hero Highlight for landing page
+#ACE Infinite Moving Cards for landing page
+#ACE Link Preview
+#ACE Moving Border
+
+
+START INTERVIEW (Display questions UI)
+display start interview logic on a drawing board, timestamp: 2:01:06
+create src\app\dashboard\interview\[interviewId]\start\page.tsx, tsrafce into it and name it StartInterview
+go to browser and add start to the url; 'http://localhost:3000/dashboard/interview/f5df0bd1-ba45-408b-ac80-01a2a413bee9/start' to view the page
+we would need to route our start interview button from the 3d-card to this page
+first we import { useRouter } from 'next/navigation';
+then add const router = useRouter(); just above const { user } = useUser();
+then add: onClick={() => router.push(`/dashboard/interview/${params.interviewId}/start`)} as a parameter in our start interview button just under the classname
+confirm it works in browser
+
+add: type Props = {
+    params: {
+        interviewId: string
+    }
+}
+to the props in StartInterview page.tsx
+and extend the props like: ({ params }: Props) => in the function (just like in interview page.tsx)
+add the following imports:
+
+    import React, { useEffect, useState } from 'react'
+    import { db } from '../../../../../../utils/db'
+    import { MockInterview } from '../../../../../../utils/schema'
+    import { eq } from 'drizzle-orm'
+
+and add 'use client' at the top
+
+add this useEffect in the StartInterview constant:
+
+useEffect(() => {
+        GetInterviewDetails();
+    }, []);
+
+add these usestates above the useEffect:
+
+    const [interviewData, setInterviewData] = useState<typeof MockInterview.$inferSelect | undefined>();
+    const [mockinterviewQuestion, setMockinterviewQuestion,] = useState<any[]>([]);
+
+then add this constant: 
+
+    const GetInterviewDetails = async () => {
+        const result = await db.select().from(MockInterview)
+            .where(eq(MockInterview.mockId, params.interviewId))
+
+        const jsonMockResp = JSON.parse(result[0].jsonMockResp)
+        setMockinterviewQuestion(jsonMockResp);
+        setInterviewData(result[0]);
+    }
+
+add console.log(jsonMockResp) above setMockinterviewQuestion(jsonMockResp);
+
+running into json format error when parsing
+comment out the lines of code that are parsing the json string (last three line of code in const GetInterviewDetails )
+add console.log(result[0]) and check browser to see output
+checking the output we can see the jsonMockResp in result[0] is not a formatted json, we need to clean it up
+it has {} parent brackets instead of [] and has a bunch of slashes '\', we need to replace the curly brackets with parentheses and remove all slashes
+use this code to clean up the json: const jsonMockResp = (result[0].jsonMockResp).replace(/^\{/, '[').replace(/\}$/, ']').replace(/\\/g, '');
+console.log(jsonMockResp) to see the new output
+looks good, add const cleanJsonMockResp = JSON.parse(jsonMockResp) and console.log(cleanJsonMockResp)
+but something is still wrong because we are still getting the same issue when we try to parse
+comment out const cleanJsonMockResp = JSON.parse(jsonMockResp) and console.log(jsonMockResp)
+copy the output from the broswer, paste it in /clean.json, format it and ask cursor what is wrong with it
+cursor will ultimately diagnose that the objects in the json are wrapped in quotes
+add this line of code: .replace(/"(\{.*?\})"/g, '$1') to the replace function(gotten from cursor)
+now refresh the page and confirm the output by pasting it in /clean.json and formatiing it
+now add back these lines:
+
+    const cleanJsonMockResp = JSON.parse(jsonMockResp)
+    console.log(cleanJsonMockResp)
+    setMockinterviewQuestion(cleanJsonMockResp);
+    setInterviewData(result[0]);
+
+refresh the page and we should see our output with no erros
+well that was frustrating to say the least but i am glad that's over
+
+In the return function of const StartInterview
+add this add div: 
+
+        <div className='grid grid-cols-1 md:grid-cols-2'>
+            
+        </div>
+
+create src\app\dashboard\interview\[interviewId]\start\_components\interview-questions.tsx, tsrafce into it and name it InterviewQuestions
+
+and call it in the new div just created in const StartInterview like so:
+
+        <div className='grid grid-cols-1 md:grid-cols-2'>
+            {mockInterviewQuestion.length > 0 && (
+                <InterviewQuestions
+                    mockInterviewQuestion={mockInterviewQuestion}
+                />
+            )}
+        </div>
+
+and import InterviewQuestions from './_components/interview-questions' 
+
+set props in interview-questions.tsx like so:
+
+type Question = {
+    question: string;
+    difficulty: string;
+    answer: string;
+}
+
+//explain how inside question array, thery are three objest that are strings and we need to define them
+
+type Props = {
+    mockInterviewQuestion: Question[]
+}
+
+const InterviewQuestions = ({ mockInterviewQuestion }: Props) => {
+    return (
+        <div className='p-5 border rounded-lg'>
+            {mockInterviewQuestion.map((question, index) => (
+                <div key={index}>
+                    <h2>Question #{index + 1}: {question.question}</h2>
+                    <p>Difficulty: {question.difficulty}</p>
+                    <p>Answer: {question.answer}</p>
+                </div>
+            ))}
+        </div>
+    )
+}
+
+change the inside div to:
+    <div key={index}>
+        <h2>Question #{index + 1}</h2>
+    </div>
+as we don't need to render the answers and difficulty here
+
+PAUSE:
+go to src\app\layout.tsx and set metadata:
+
+export const metadata: Metadata = {
+  title: "Mockree",
+  description: "AI Generated Job Interviews",
+};
+
+
+add const [activeQuestionIndex, setActiveQuestionIndex ] = useState(0); under mockInterviewQuestion constant in StartInterview page.tsx
+why 0? well we need to start from the first question, and we should only proceed to the next question when the current question has been answered
+add it in the InterviewQuestions return function
+                <InterviewQuestions
+                    mockInterviewQuestion={mockInterviewQuestion}
+                    activeQuestionIndex={activeQuestionIndex}
+                />
+
+update the props in interview-questions.tsx like so:
+type Props = {
+    mockInterviewQuestion: Question[],
+    activeQuestionIndex: number
+}
+
+add to the InterviewQuestions constant in interview-questions.tsx like so:
+const InterviewQuestions = ({ mockInterviewQuestion, activeQuestionIndex }: Props) =>
+
+wrap the className in the h2 question tag like so:
+    <h2 className={`p-2 rounded-full text-xs md:text-sm text-center cursor-pointer ${activeQuestionIndex == index ? 'bg-[#1c4b82] text-white dark:bg-[#1c4b82] dark:text-white' : 'bg-secondary text-black dark:bg-secondary dark:text-white'}`}> explain this
+        Question #{index + 1}
+    </h2>
+
+change the active index in const [activeQuestionIndex, setActiveQuestionIndex ] = useState(0); to 1 to test it out
+
+didnt work out
+
+    add moving border to question buttons
+    weve already configured our tailwind.config.ts whenwe were setting up 3d-card, so no need for that ANYMORE
+    create src\components\ui\moving-border.tsx and add the code from Ace docs
+    import { Button } from "@/components/ui/moving-border"; into interview-questions.tsx
+
+add this h2:
+    <h2 className='my-5 text-md md:text-lg'>
+        {mockInterviewQuestion[activeQuestionIndex]?.question}
+    </h2>
+under the the div nesting mockInterviewQuestion.map((question, index)) in interview-questions.tsx
+
+add:
+            <div className='border rounded-lg p-5 bg-blue-100 mt-20'>
+                <h2 className='flex gap-2 items-center text-[#1c4b82] '>
+                    <Lightbulb />
+                    <strong>
+                        Note:
+                    </strong>
+                </h2>
+            </div>
+ensure to import { Lightbulb } from 'lucide-react';
+
+under the above h2
+
+add: NEXT_PUBLIC_QUESTION_NOTE="Please click on 'Record' only when you are prepared to answer a question. Ensure that your microphone is functioning correctly and that your responses are recorded clearly. At the conclusion of the interview, you will receive comprehensive feedback comparing your answers with exemplary responses."
+in .env file
+
+add : <h2 className='text-sm text-[#1c4b82] my-20'>
+            {process.env.NEXT_PUBLIC_QUESTION_NOTE}
+        </h2>
+under the h2 with the light bulb
+
+create src\app\dashboard\interview\[interviewId]\start\_components\record-answer.tsx, tsrafce into it and name it RecordAnswer
+add <RecordAnswer /> in src\app\dashboard\interview\[interviewId]\start\page.tsx:
+    <div className='grid grid-cols-1 md:grid-cols-2'>
+            {mockInterviewQuestion.length > 0 && (
+                <InterviewQuestions
+                    mockInterviewQuestion={mockInterviewQuestion}
+                    activeQuestionIndex={activeQuestionIndex}
+                />
+            )}
+
+            <RecordAnswer />
+    </div>
+and import RecordAnswer from './_components/record-answer'
+
+in record-answer.tsx add this div in the return function:
+        <div className='flex flex-col my-20 justify-center items-center bg-black rounded-lg p-5'>
+            <Image
+                src={'/webcam-icon.png'}
+                alt="Webcam icon"
+                width={200}
+                height={200}
+                className='absolute'
+            />
+            <Webcam />
+        </div>
+
+further edit the webcam tag like so:
+            <Webcam
+                mirrored={true}
+                style={{
+                    height: 300,
+                    width: '100%',
+                    zIndex: 10
+                }}
+            />
+
+check output with camera on and off
+
+Record Button
+nest the div containing the image and webcam in a new div with className='flex items-center justify-center flex-col'
+add this button:
+             <Button
+                variant="outline"
+                className="shadow-[0_0_0_3px_#000000_inset] px-6 py-2 mt-1 bg-transparent border border-black dark:border-white dark:text-white text-black rounded-lg font-bold transform hover:-translate-y-1 transition duration-400"
+            >
+                Record
+            </Button>
+and import { Button } from '@/components/ui/button'
+
+run npm i react-hook-speech-to-text
+import useSpeechToText from 'react-hook-speech-to-text'; in record-answer.tsx
+add: 
+const {
+    error,
+    interimResult,
+    isRecording,
+    results,
+    startSpeechToText,
+    stopSpeechToText,
+  } = useSpeechToText({
+    continuous: true,
+    useLegacyResults: false
+});
+
+above the return function
+
+to test the feature we add the following code from https://www.npmjs.com/package/react-hook-speech-to-text
+    <h1>Recording: {isRecording.toString()}</h1>
+      <button onClick={isRecording ? stopSpeechToText : startSpeechToText}>
+        {isRecording ? 'Stop Recording' : 'Start Recording'}
+      </button>
+      <ul>
+        {results.map((result) => (
+          <li key={result.timestamp}>{result.transcript}</li>
+        ))}
+        {interimResult && <li>{interimResult}</li>}
+      </ul>
+
+but change the result.map field to:
+                {results.map((result) => (
+                    <li key={typeof result === 'string' ? result : result.timestamp}>
+                        {typeof result === 'string' ? result : result.transcript}
+                    </li>
+                ))}
+to resolve any type errors
+on the browser, when 'start recording' is clicked it requests for permissions from our mic
+after granting it should start recording and logging the audio on the screen
+
+remove the <h1><ul> code added from https://www.npmjs.com/package/react-hook-speech-to-text
+and edit the button code like so:
+                <Button
+                    variant="outline"
+                    className="shadow-[0_0_0_3px_#000000_inset] px-6 py-2 mt-1 bg-transparent border border-black dark:border-white dark:text-white text-black rounded-lg font-bold transform hover:-translate-y-1 transition duration-400"
+                    onClick={isRecording ? stopSpeechToText : startSpeechToText}
+                >
+                    {isRecording ? (
+                        <h2 className='text-[#1c4b82] dark:text-white flex items-center gap-2'>
+                            <Mic />
+                            Recording...
+                        </h2>
+                    ) : 'Record'}
+                </Button>
+
+add this useEffect before the return function in 
+    useEffect(() =>{
+
+    },[results])
+
+add  
+    const[userAnswer, setUserAnswer]=useState(''); at the very top of const RecordAnswer in record-answer.tsx
+
+edit the useEffect to:
+    useEffect(() => {
+        results.forEach((result) => {
+            if (typeof result === 'object' && result.transcript) {
+                setUserAnswer(prevAns => prevAns + result.transcript);
+            }
+        });
+    }, [results])
+
+wrap the record button in a div with className='flex flex-col -my-10 justify-center items-center'
+recording works fine, na my laptop, Note that recording will stop automatically when no audio is detected, had this issue where the recording will just stop in 8 secs when i was writing this because the device mic was bad and i thought it was a bug
+add this button under the record button:
+                <Button
+                    onClick={() => console.log(userAnswer)}
+                >
+                    Show Answer
+                </Button>
+to show the response in browswer console
+change 'Recording...' to 'Stop Recording' in the record button and test out the output again in browswer
+
+Add TTS option , so users can listen to the question as opposed to just reading it(more interview like)
+go to interview-questions.tsx
+under the {mockInterviewQuestion[activeQuestionIndex]?.question} h2
+add: <Volume2 /> and import it together with lightbuld from lucide react
+check broswer to see it
+then we pass the question into an onClick function in the volume icon like so:
+            <Volume2
+                onClick={() => textToSpeech(mockInterviewQuestion[activeQuestionIndex]?.question)}
+            />
+worry not about the error regarding TTS, we'll resolve that by creating a function for it now
+add this above the return function:
+    const textToSpeech=(text: string)=>{
+        if ('speechSynthesis' in window) {
+            const speech=new SpeechSynthesisUtterance(text);
+            window.speechSynthesis.speak(speech)
+        }
+        else{
+            alert('Your browser does not support text to speech')
+        }
+    }
+
+add className='cursor-pointer' to <Volume2 />
+TTS should work fine now in browser, 
+go to src\app\dashboard\interview\[interviewId]\start\page.tsx and chnage useState value in const [activeQuestionIndex, setActiveQuestionIndex ] = useState(0); to test across different questions
+
+#WIP CUSTOM TTS
+    
+Page transition animation
+    create src\components\ui\transition-link.tsx and paste the code in the file
+    update the second layer base in root globals.css with:
+
+        @layer base {
+            * {
+            @apply border-border;
+            }
+            body {
+            @apply bg-background text-foreground;
+            transition-property: opacity, transform, filter, background;
+            transition-timing-function: ease-in-out;
+            transition-duration: 500ms;
+            }
+
+            .page-transition {
+                opacity: 0;
+                background: black;
+                transform: translateY(40px);
+                filter: blur(12px);
+            }
+        }
+
+    now test it by wrapping the start interview button in src\app\dashboard\interview\[interviewId]\page.tsx to look like so:
+
+        <TransitionLink href={`/dashboard/interview/${params.interviewId}/start`}>
+            <CardItem
+                translateZ={20}
+                className="px-4 hover:bg-[#1c4b82] dark:hover:bg-secondary py-2 rounded-xl bg-black dark:bg-white dark:text-black text-white text-xs font-bold"
+            >
+                Start Interview
+            </CardItem>
+        </TransitionLink>
+        import { TransitionLink } from '@/components/ui/transition-link'
+    
+    transition should work now when we click on start interview.
+    however, there are two problems we need to solve while trying to achieve transition
+        first is we cannot call a component programmatically without being tied to a specific <link> component, if we can even call it at all, because trust me i tried, it's possible but incredibly redundant in a case of:
+        Second is cursor pointer, this is because our transition is a component so having a cursor pointer comes by default, this problem is unique to our app because we don't want it in our 3d-card espcially since we are using the 'following-pointer' component
+            if (resp) {
+                setOpenDrawer(false)
+                router.push('dashboard/interview/' + resp[0]?.mockId)
+                toast("Interview Questions Generated", {
+                    description: moment().format('DD-MM-YYYY'),
+                })
+            }
+        in src\app\dashboard\_components\add-new-interview.tsx, where we cant just render the transition component
+    
+    solution 1: we need to convert transition-link.tsx into a function and use that programmatically when NEEDED
+
+        create src\lib\transition.ts and paste the code in it 
+        in add-new-interview.tsx
+        import { useTransitionNavigation } from '@/lib/transition'
+        add const { transitionTo } = useTransitionNavigation(); under const { user } = useUser();
+        now we can switch router.push for transitionTo('dashboard/interview/' + resp[0]?.mockId) and it should work
+
+        with this we can use the programmatical function in a reusable component.
+        now all we have to ensure is whenever we need to route, we remember to use our transitionTo or create a handleClick for it
+
+    solution 2: the fact that we cant call a reusable component programmatically does not mean the converse is true
+    
+        we need create a handleClick method:
+            import { useTransitionNavigation } from '@/lib/transition'
+            add const { transitionTo } = useTransitionNavigation(); under const { user } = useUser();
+            const handleClick = () => {
+                transitionTo(`/dashboard/interview/${params.interviewId}/start`);
+            };
+        and return it like so:
+            <CardItem
+                translateZ={20}
+                className="px-4 hover:bg-[#1c4b82] dark:hover:bg-secondary py-2 rounded-xl bg-black dark:bg-white dark:text-black text-white text-xs font-bold"
+                onClick={handleClick}
+            >
+                Start Interview
+            </CardItem>
+        and unwrap it from the TransitionLink tag(delete the import too). and it should work just fine now with our simple transition without the cursor-pointer effect
+        we can delete the transition-link component, or keep it incase we don't need to call it programmatically
+
+
+
+#WIP test final product with https://www.lockedinai.com/
+
+
+
+#WIP fix console err:
+    ⨯ ReferenceError: window is not defined
+    at __webpack_require__ (C:\Users\USER\Desktop\Setups\ai_mock_interview\mocker\.next\server\webpack-runtime.js:33:43)
+    at eval (./src/app/dashboard/interview/[interviewId]/start/_components/record-answer.tsx:13:83)
+    at (ssr)/./src/app/dashboard/interview/[interviewId]/start/_components/record-answer.tsx (C:\Users\USER\Desktop\Setups\ai_mock_interview\mocker\.next\server\app\dashboard\interview\[interviewId]\start\page.js:226:1) 
+    at __webpack_require__ (C:\Users\USER\Desktop\Setups\ai_mock_interview\mocker\.next\server\webpack-runtime.js:33:43)
+    at eval (./src/app/dashboard/interview/[interviewId]/start/page.tsx:13:83)
+    at (ssr)/./src/app/dashboard/interview/[interviewId]/start/page.tsx (C:\Users\USER\Desktop\Setups\ai_mock_interview\mocker\.next\server\app\dashboard\interview\[interviewId]\start\page.js:237:1)
+    at Object.__webpack_require__ [as require] (C:\Users\USER\Desktop\Setups\ai_mock_interview\mocker\.next\server\webpack-runtime.js:33:43)
+    at JSON.parse (<anonymous>)
+    digest: "283246580"
+
+    Fix:
+    import dynamic from 'next/dynamic' in src\app\dashboard\interview\[interviewId]\start\page.tsx
+
+    add:
+        const RecordAnswer = dynamic(() => import('./_components/record-answer'), { 
+            ssr: false,
+            loading: () => <p>Loading...</p>
+        })
+    just after the imports
+
+
+
+
+add:
+    images: {
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'img.clerk.com',
+            },
+        ],
+    },
+to next.config.js (or mjs for ts) to solve the console error:
+    ⚠ The "images.domains" configuration is deprecated. Please use "images.remotePatterns" configuration instead.
+
+
+RECORD ANSWERS WITH AI GENERATED feedback
+display logic on a drawing board, timestamp: 2:32:00
+add this:
+    const SaveUserAnswer = () => {
+        if (isRecording) {
+            stopSpeechToText();
+        }
+        else {
+            startSpeechToText();
+        }
+    }
+below the useEffect in record-answer.tsx
+then we call SaveUserAnswer in the onClick property of the record button, and also add a stop icon like so:
+                <Button
+                    variant="outline"
+                    className="shadow-[0_0_0_3px_#000000_inset] px-6 py-2 mt-1 bg-transparent border border-black dark:border-white dark:text-white text-black rounded-lg font-bold transform hover:-translate-y-1 transition duration-400"
+                    onClick={SaveUserAnswer}
+                >
+                    {isRecording ? (
+                        <h2 className='text-red-600 animate-pulse dark:text-red-600 flex items-center gap-2'>
+                            <StopCircle />
+                            Stop Recording
+                        </h2>
+                    ) :
+                        <h2 className='text-[#1c4b82] dark:text-white flex items-center gap-2'>
+                            <Mic />
+                            Record
+                        </h2>
+                    }
+                </Button>
+
+modify SaveUserAnswer in record-answer.tsx to reject recordings of less than 10 chars like so
+    const SaveUserAnswer = () => {
+        if (isRecording) {
+            stopSpeechToText()
+            if (userAnswer?.length < 10) {
+                toast('Answer Length too short, please record again')
+                return;
+            }
+        }
+        else {
+            startSpeechToText();
+        }
+    }
+
+goto src\app\dashboard\interview\[interviewId]\start\page.tsx
+update the <RecordAnswer/> in the return function with the props:
+            <RecordAnswer
+                mockInterviewQuestion={mockInterviewQuestion}
+                activeQuestionIndex={activeQuestionIndex}
+                interviewData={interviewData}
+            />
+update the dynamic import with the props
+    const RecordAnswer = dynamic<RecordAnswerProps>(() => import('./_components/record-answer'), {
+        ssr: false,
+        loading: () => <p>Loading...</p>
+    })
+add this interface abive the dynamic import:
+    interface RecordAnswerProps {
+        mockInterviewQuestion: any[];
+        activeQuestionIndex: number;
+        interviewData: typeof MockInterview.$inferSelect | undefined;
+    }
+add mockInterviewQuestion and activeQuestionIndex as props in record-answer.tsx like so:
+    const RecordAnswer = ({ mockInterviewQuestion, activeQuestionIndex }: { mockInterviewQuestion: any[], activeQuestionIndex: number }) =>
+
+substitute type Props = {} in record-answer.tsx for:
+interface RecordAnswerProps {
+    mockInterviewQuestion: {
+        question: string;
+        answer: string;
+    }[];
+    activeQuestionIndex: number;
+    interviewData: any; 
+}
+go to interview-questions.tsx line 45 and copy mockInterviewQuestion[activeQuestionIndex]?.question because we'll be fetching the same thing for record answer
+
+add the following prompt code under the second if statement in const SaveUserAnswer in record-answer.tsx
+    const feedbackPrompt="Question:"+mockInterviewQuestion[activeQuestionIndex]?.question+", User Answer:"+userAnswer+",Given the interview question and the user's answer, please provide: "+"A rating (1-10) of the answer's quality and relevance "+"Constructive feedback for improvement "+"Suggestions for additional content or clarification "+"Format the response as a JSON object with fields for 'rating', 'feedback', 'strengths', and 'improvements'. Limit the total response to 3-5 concise sentences";
+add this just under the feedbackPrompt const
+    const result=await chatSession.sendMessage(feedbackPrompt);
+    import { chatSession } from '../../../../../../../utils/geminiAi' 
+update the const SaveUserAnswer to an async function
+    const SaveUserAnswer = async() =
+add the JSON const under the result promt
+    const MockJsonResp=(result.response.text()).replace('```json', '').replace('```', '');
+add console.log(MockJsonResp) so we can see our output in the broswer
+our response came out just as we want
+next we need to parse the json with
+    const JsonFeedbackResp=JSON.parse(MockJsonResp);
+
+next we need to save this in our database, but we only have MockInterview table in our schema
+so we create a new table with:
+    use ctrl+k to generate table code for userAnswer under MockInterview in schema.ts
+i moticed we made a little mistle in the schema, we need to change 'text' variable to 'varchar' for 
+    jobDesc
+    jobPosition
+    jobExperience
+    createdBy
+    createdAt
+    mockId
+then add the following:
+    export const UserAnswer = pgTable('userAnswer', {
+        id: serial('id').primaryKey(),
+        mockIdRef:varchar('mockId').notNull(),
+        question: varchar('question').notNull(),
+        userAnswer: varchar('userAnswer').notNull(),
+        feedback: varchar('feedback').notNull(),
+        createdAt: varchar('createdAt').notNull(),
+        rating: serial('rating').notNull(),
+        userEmail: varchar('userEmail').notNull(),
+        correctAnswer: varchar('correctAnswer').notNull()
+    });
+
+run npm rn db:push
+check drizzle studio to confirm our new table
+
+add this const {user}=useUser(); in record-answer.tsx under const [userAnswer, setUserAnswer] = useState(''); and
+import { useUser } from '@clerk/nextjs'
+
+add this code below:
+    const resp= await db.insert(UserAnswer).values({
+                mockIdRef: interviewData?.mockId ?? '',
+                question: mockInterviewQuestion[activeQuestionIndex]?.question ?? '',
+                correctAnswer: mockInterviewQuestion[activeQuestionIndex]?.answer ?? '',
+                userAnswer: userAnswer ?? '',
+                feedback: JsonFeedbackResp?.feedback ?? '',
+                rating: JsonFeedbackResp?.rating ?? 0,
+                userEmail: user?.primaryEmailAddress?.emailAddress ?? '',
+                createdAt: moment().format('DD-MM-YYYY')
+    })
+import { db } from '../../../../../../../utils/db'
+and import { UserAnswer } from '../../../../../../../utils/schema'
+
+add this:
+    const [loading,setLoading]=useState<boolean>(false);
+under const { user } = useUser();
+
+set setLoading(true); above stopSpeechToText() in const SaveUserAnswer = async () => 
+set setLoading(false); above toast('Answer Length too short, please record again') in the same place\
+
+set loading to be false and empty user answer once successful like this
+        if (resp) {
+                toast('Answer Saved Successfully')
+            }
+            setUserAnswer('')
+            setLoading(false);
+
+set disabled={loading} in the record button
+set setUserAnswer('') above const feedbackPrompt
+
+rename the const SaveUserAnswer to const StartStopRecording and update the record button onClick={StartStopRecording}
+create a new const under const StartStopRecording 'const UpdateUserAnswer = async () =>...'
+move the following code from StartStopRecording to UpdateUserAnswer:
+        const feedbackPrompt = "Question:" + + ", User Answer:" + userAnswer + ",Given the interview question and the user's answer, please provide: " + "A rating (1-10) of the answer's quality and relevance " + "Constructive feedback for improvement " + "Suggestions for additional content or clarification " + "Format the response as a JSON object with fields for 'rating', 'feedback', 'strengths', and 'improvements'. Limit the total response to 3-5 concise sentences";
+        const result = await chatSession.sendMessage(feedbackPrompt);
+        const MockJsonResp = (result.response.text()).replace('```json', '').replace('```', '');
+        // console.log(MockJsonResp)
+        const JsonFeedbackResp = JSON.parse(MockJsonResp);
+        console.log(JsonFeedbackResp);
+        const resp = await db.insert(UserAnswer).values({
+            mockIdRef: interviewData?.mockId ?? '',
+            question: mockInterviewQuestion[activeQuestionIndex]?.question ?? '',
+            correctAnswer: mockInterviewQuestion[activeQuestionIndex]?.answer ?? '',
+            userAnswer: userAnswer ?? '',
+            feedback: JsonFeedbackResp?.feedback ?? '',
+            rating: JsonFeedbackResp?.rating ?? 0,
+            userEmail: user?.primaryEmailAddress?.emailAddress ?? '',
+            createdAt: moment().format('DD-MM-YYYY')
+        })
+
+        if (resp) {
+            toast('Answer Saved Successfully')
+        }
+        setUserAnswer('')
+        setLoading(false);
+
+remove setLoading(true); above stopSpeechToText() in const StartStopRecording
+and set it above const feedbackPrompt in const SaveUserAnswer
+remove setUserAnswer('') under if (userAnswer?.length < 10)  in const StartStopRecording
+
+add this useEffect under the already existing useEffect in record-answer.tsx:
+    useEffect(() => {
+        if (userAnswer.length > 0) {
+            UpdateUserAnswer();
+        }
+    }, [userAnswer])
+
+comment out from const feedback to toast('Answer Saved Successfully') in const UpdateUserAnswer to test the recording
+but when testing, it shows the toast('Answer Length too short, please record again'); even if the char >10
+this is because the toast is is rendered before  userAnswer state is updated with the full transcription.
+to fix this we need to update const StartStopRecording like so:
+    const StartStopRecording = async () => {
+        if (isRecording) {
+            stopSpeechToText();
+            // Wait for state to update
+            setTimeout(() => { 
+                if (userAnswer.length < 10) {
+                    setLoading(false);
+                    toast('Answer Length too short, please record again');
+                    setUserAnswer(''); // Reset the answer
+                } else {
+                    // Proceed with updating the answer
+                    UpdateUserAnswer();
+                }
+            }, 100);
+        } else {
+            setUserAnswer(''); // Reset the answer when starting a new recording
+            startSpeechToText();
+        }
+    }
+
+add this if statment above console.log(userAnswer) in const UpdateUserAnswer
+     if (userAnswer.length < 10) {
+            setLoading(false);
+            return; // Don't proceed if answer is too short
+        }
+
+
+
+logical debug:
+error toast keeps showing up
+userAnswer('') does not happen when recording stops(maybe it does) but it should happen after it's being saved in db
+should be a simple fix tho
+
+Fix for the logical error above:
+    change the useEffect for getting transcript to:
+        useEffect(() => {
+            if (results.length > 0) {
+                const latestResult = results[results.length - 1];
+                if (typeof latestResult === 'object' && latestResult.transcript) {
+                    setUserAnswer(prevAns => prevAns + ' ' + latestResult.transcript);
+                }
+            }
+        }, [results])
+    
+    reduce the const SaveUserAnswer to:
+        const SaveUserAnswer = async () => {
+            if (isRecording) {
+                stopSpeechToText();
+                // UpdateUserAnswer will be called by the useEffect hook
+            } else {
+                setUserAnswer(''); // Reset the answer when starting a new recording
+                startSpeechToText();
+            }
+        }
+
+    update the const UpdateUserAnswer like so:
+        const UpdateUserAnswer = async () => {
+            console.log("Current answer:", userAnswer);
+            console.log("Current answer length:", userAnswer.length);
+
+            if (userAnswer.length < 10) {
+                setLoading(false);
+                toast('Answer Length too short, please record again');
+                setUserAnswer('');
+                return;
+            }
+
+            setLoading(true);
+            const feedbackPrompt = "Question:" + mockInterviewQuestion[activeQuestionIndex]?.question + ", User Answer:" + userAnswer + ",Given the interview question and the user's answer, please provide: " + "A rating (1-10) of the answer's quality and relevance to the question " + "Constructive feedback for improvement " + "Suggestions for additional content or clarification " + "Format the response as a JSON object with fields for 'rating', 'feedback', 'strengths', and 'improvements'. Limit the total response to 3-5 concise sentences";
+            const result = await chatSession.sendMessage(feedbackPrompt);
+            const MockJsonResp = (result.response.text()).replace('```json', '').replace('```', '');
+            console.log(MockJsonResp);
+            const JsonFeedbackResp = JSON.parse(MockJsonResp);
+        
+            const resp = await db.insert(UserAnswer).values({
+                mockIdRef: interviewData?.mockId ?? '',
+                question: mockInterviewQuestion[activeQuestionIndex]?.question ?? '',
+                correctAnswer: mockInterviewQuestion[activeQuestionIndex]?.answer ?? '',
+                userAnswer: userAnswer ?? '',
+                feedback: JsonFeedbackResp?.feedback ?? '',
+                rating: JsonFeedbackResp?.rating ?? 0,
+                userEmail: user?.primaryEmailAddress?.emailAddress ?? '',
+                createdAt: moment().format('DD-MM-YYYY')
+            })
+
+            if (resp) {
+                toast('Answer Saved Successfully');
+            }
+            setUserAnswer('');
+            setLoading(false);
+        }
+
+    update the second useEffect like:
+        useEffect(() => {
+            if (!isRecording && userAnswer.length > 0) {
+                UpdateUserAnswer();
+            }
+        }, [isRecording, userAnswer]);
+
+debug in browser console, should work well now.
+we can now remove the show answer button as we don't need that anymore
+
+Set next, previous buttons
+first we nest the InterviewQuestions and RecordAnswer div inside the return function in src\app\dashboard\interview\[interviewId]\start\page.tsx in div with className='flex flex-col'
+then we edit the InterviewQuestions and RecordAnswer div to have className='flex-grow grid grid-cols-1 md:grid-cols-2 gap-10 mb-6'
+then we add a div that wil contain the buttons under the InterviewQuestions and RecordAnswer like so:
+    <div className='flex justify-end gap-6'>
+        <Button
+            className="shadow-[0_0_0_3px_#000000_inset] px-6 py-2 mt-1 bg-transparent border border-black dark:border-white dark:text-white text-black rounded-lg font-bold transform hover:-translate-y-1 transition duration-400"
+            variant="outline"
+        >
+            Previous Question
+        </Button>
+        <Button
+            className="shadow-[0_0_0_3px_#000000_inset] px-6 py-2 mt-1 bg-transparent border border-black dark:border-white dark:text-white text-black rounded-lg font-bold transform hover:-translate-y-1 transition duration-400"
+            variant="outline"
+        >
+            Next Question
+        </Button>
+        <Button
+            className="shadow-[0_0_0_3px_#000000_inset] px-6 py-2 mt-1 bg-transparent border border-black dark:border-white dark:text-white text-black rounded-lg font-bold transform hover:-translate-y-1 transition duration-400"
+            variant="outline"
+        >
+            End Interview
+        </Button>
+    </div>
+
+we have a ui conflict, so we'll need to solve it
+let's chnage justify-end to justify-evenly in the button div and add a seperator
+run 'npx shadcn-ui@latest add separator' from shadcn ui
+add the <Separator className="my-4" /> between InterviewQuestions and RecordAnswer div and button div(thats better)
+we might need to change this when setting up the function from the buttons
+
+wrap the first button(previous question) in a condition:
+    {activeQuestionIndex > 0 && <Button
+        className="shadow-[0_0_0_3px_#000000_inset] px-6 py-2 mt-1 bg-transparent border border-black dark:border-white dark:text-white text-black rounded-lg font-bold transform hover:-translate-y-1 transition duration-400"
+        variant="outline"
+    >
+        Previous Question
+    </Button>}
+    when we check our browser, we only see (previous question) button when there's a previous question
+    test this by changing activeQuestionIndex to any other number other than 0 to show the button
+
+wrap the last button(End Interview) in a condition:
+    {activeQuestionIndex == mockInterviewQuestion?.length - 1 && <Button
+        className="shadow-[0_0_0_3px_#000000_inset] px-6 py-2 mt-1 bg-transparent border border-black dark:border-white dark:text-white text-black rounded-lg font-bold transform hover:-translate-y-1 transition duration-400"
+        variant="outline"
+    >
+        End Interview
+    </Button>}
+    when we check our browser, we only see (End Interview) button when we're at the last question
+    test this by changing activeQuestionIndex to 0 to show only (next question) button
+
+wrap the second button(Next Question) in a condition:
+    {activeQuestionIndex != mockInterviewQuestion?.length - 1 && <Button
+        className="shadow-[0_0_0_3px_#000000_inset] px-6 py-2 mt-1 bg-transparent border border-black dark:border-white dark:text-white text-black rounded-lg font-bold transform hover:-translate-y-1 transition duration-400"
+        variant="outline"
+    >
+        Next Question
+    </Button>}
+    when we check our browser, we won't see (Next Question) button when we're at the last question
+    test this by changing activeQuestionIndex to 4 to confirm
+
+add onClick={() => setActiveQuestionIndex(activeQuestionIndex + 1)} to Next Question button
+and onClick={() => setActiveQuestionIndex(activeQuestionIndex - 1)} to Previous Question button
+
+Set function to limit user from answering same question twice
+    add const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(new Set()); under the loading const
+    add setAnsweredQuestions(prev => new Set(prev).add(activeQuestionIndex)); under toast('Answer Saved Successfully'); in const UpdateUserAnswer
+    update the disabled class in the record button:
+        disabled={loading || answeredQuestions.has(activeQuestionIndex)}
+    update the button content with:
+        {answeredQuestions.has(activeQuestionIndex) ? (
+            <h2 className='text-gray-400 flex items-center gap-2'>
+                Answer Recorded
+            </h2>
+        ) : isRecording ? (
+            <h2 className='text-red-600 animate-pulse dark:text-red-600 flex items-center gap-2'>
+                <StopCircle />
+                Stop Recording
+            </h2>
+        ) : (
+            <h2 className='text-[#1c4b82] dark:text-white flex items-center gap-2'>
+                <Mic />
+                Record
+            </h2>
+        )}
+
+    this works well now but when i refresh the page the state is reset
+    we can fix this by allocating some local storage to save the state during the interview session, this way refreshing the page will now affect it
+    update const answeredQuestions to:
+        const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(() => {
+            if (typeof window !== 'undefined') {
+                const saved = localStorage.getItem('answeredQuestions');
+                return new Set(saved ? JSON.parse(saved) : []);
+            }
+            return new Set();
+        });
+    add a new useEffect just below const answeredQuestions to manage the stored data:
+        useEffect(() => {
+            localStorage.setItem('answeredQuestions', JSON.stringify(Array.from(answeredQuestions)));
+        }, [answeredQuestions]);
+    lastly we update const SaveUserAnswer to:
+        const SaveUserAnswer = async () => {
+            if (isRecording) {
+                stopSpeechToText();
+                // UpdateUserAnswer will be called by the useEffect hook
+            } else if (!answeredQuestions.has(activeQuestionIndex)) {
+                setUserAnswer(''); // Reset the answer when starting a new recording
+                startSpeechToText();
+            } else {
+                toast('You have already answered this question');
+            }
+        }
+    and now we can record an answer, refresh the page and it still retains our state
+
+    Noticed that our answeredQuestions works alittle bit too well as it's persistent even when a new interview is created.
+    to fix this we need to add a new prop to clear the strorage and reset the answeredQuestions when a new interview has started
+        add 'isNewInterview: boolean;' under 'interviewData: any;' in the record-answer.tsx and src\app\dashboard\interview\[interviewId]\start\page.tsx props interface
+        edit the main method to include the new prop like so:
+            const RecordAnswer: React.FC<RecordAnswerProps> = ({ mockInterviewQuestion, activeQuestionIndex, interviewData, isNewInterview }) =>
+        add the if Statement:
+            if (isNewInterview) {
+                localStorage.removeItem('answeredQuestions');
+                return new Set();
+            }
+        just above:
+            const saved = localStorage.getItem('answeredQuestions');
+        in the parent if:
+            if (typeof window !== 'undefined')
+        Then, in the parent component where you're rendering RecordAnswer(src\app\dashboard\interview\[interviewId]\start\page.tsx), you need to pass the isNewInterview prop. This should be set to true when starting a new interview, and false otherwise, like so:
+            interface RecordAnswerProps {
+                mockInterviewQuestion: any[];
+                activeQuestionIndex: number;
+                interviewData: typeof MockInterview.$inferSelect | undefined;
+                isNewInterview: boolean; // Add this line
+            }
+        
+
+#WIP change drawer to animated modal from Aceternity (done✅)
+    create src\components\ui\animated-modal.tsx, go to Aceternity ui and paste the code from the docs(given we've installed all dependencies already)
+    add const images as first thing in const AddNewInterview
+        const images = [
+            "https://images.unsplash.com/photo-1517322048670-4fba75cbbb62?q=80&w=3000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            "https://images.unsplash.com/photo-1573790387438-4da905039392?q=80&w=3425&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            "https://images.unsplash.com/photo-1555400038-63f5ba517a47?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            "https://images.unsplash.com/photo-1554931670-4ebfabf6e7a9?q=80&w=3387&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            "https://images.unsplash.com/photo-1546484475-7f7bd55792da?q=80&w=2581&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        ]; 
+    we'll switch the images to ours solution
+    import the following into add-new-interview.tsx
+        import {
+        Modal,
+        ModalBody,
+        ModalContent,
+        ModalFooter,
+        ModalTrigger,
+        } from "@/components/ui/animated-modal";
+        import Image from "next/image";
+        import { motion } from "framer-motion";
+        import { useModal } from "@/components/ui/animated-modal";
+
+    to be able to use useModal from '@/components/ui/animated-modal'; without running into the error posed by:
+        export const useModal = () => {
+            const context = useContext(ModalContext);
+            if (!context) {
+                throw new Error("useModal must be used within a ModalProvider");
+            }
+            return context;
+        };
+    we need to wrap our children in root layout with ModalProvider like this:
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <ModalProvider>
+              {children}
+            </ModalProvider>
+          </ThemeProvider>
+
+    then we can now add const { setOpen } = useModal(); in add-new-interview.tsx under const transitionTo
+    then set setOpen(false) in const onSubmit, now whenever we recieve a resp the modal closes, we can also add a cancel button also
+    remove the Modal wrapper and kept only the individual components.
+    add this animate function over 'while hover' in the modal:
+        animate={loading ? {
+            rotate: [0, 360],
+            transition: {
+                duration: 2,
+                repeat: Infinity,
+                ease: "linear"
+            }
+        } : {}}
+    to enable an animation when we're loading our interview
+
+    original add-new-interview.tsx moved to add-new-interviewOG.tsx
+    new code contains industry/enterprise standard measures like:
+        Error Handling: Add proper error handling for the API call and database operations. Currently, if there's an error, it's only logged to the console. You should display an error message to the user using the toast function.
+        Input Validation: Implement input validation before submitting the form. For example, check if the job experience is a valid number and within a reasonable range.
+        Separate API Logic: Move the API call and database operation into a separate function or even better, into a custom hook. This will make the component more focused on rendering and improve maintainability.
+        Use TypeScript Interfaces: Define interfaces for the form data and API response to improve type safety.
+        Optimize State Management: Consider using a single state object for form data instead of separate state variables for each field.
+        Accessibility: Add proper aria labels to form inputs for better accessibility.
+        Loading State: Show a loading indicator for the entire form while submitting, not just the button.
+
+#WIP we need to set the button so that it will only be enabled when all questions have been answered(done✅)
+    a way we can solve this is disabling the Next question button until answer for a present question is recorded
+    to achieve this:
+        add const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(new Set()); under const { transitionTo } = useTransitionNavigation(); in src\app\dashboard\interview\[interviewId]\start\page.tsx
+        update the interface props with onAnswerSaved: (index: number) => void; in both record-answer.tsx and src\app\dashboard\interview\[interviewId]\start\page.tsx
+        update the main method in record-answer.tsx with the new prop like so:
+            const RecordAnswer: React.FC<RecordAnswerProps> = ({ mockInterviewQuestion, activeQuestionIndex, interviewData, isNewInterview, onAnswerSaved }) =>
+        now we update the Next Question button with the disabled property
+            disabled={!answeredQuestions.has(activeQuestionIndex)}
+        now update the if statement wrapping the successful response toast in record-answer.tsx to:
+            onAnswerSaved(activeQuestionIndex); from setAnsweredQuestions(prev => new Set(prev).add(activeQuestionIndex));
+            // use this to debug why the record button isn't disabled anymore after recording
+    now we can check and see that the next question button is disabled by default untin we recieve toast('Answer Saved Successfully');
+    #WIP we run into a new error after this use line 1675 to debug this(done✅)
+        to fix this we add:
+            setAnsweredQuestions(prev => new Set(prev).add(activeQuestionIndex));
+        to the if statment in record-answer.tsx:
+            if (resp) {
+                toast('Answer Saved Successfully');
+                onAnswerSaved(activeQuestionIndex);
+                setAnsweredQuestions(prev => new Set(prev).add(activeQuestionIndex));
+            }
+        but it's not persistent, as we see when we refresh the page, this is because const [activeQuestionIndex, setActiveQuestionIndex] = useState(0); is set to 0, and we need to Implement a localStorage tp save the useState instead if starting from 0
+        to fix this we update the method to:
+            const [activeQuestionIndex, setActiveQuestionIndex] = useState(() => {
+                if (typeof window !== 'undefined') {
+                    const saved = localStorage.getItem('activeQuestionIndex');
+                    return saved ? parseInt(saved, 10) : 0;
+                }
+                return 0;
+            });
+        then we add these useEffects under const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(new Set());
+            useEffect(() => {
+                const checkIfNewInterview = () => {
+                    const savedAnswers = localStorage.getItem('answeredQuestions');
+                    if (savedAnswers) {
+                        setIsNewInterview(false);
+                        setAnsweredQuestions(new Set(JSON.parse(savedAnswers)));
+                    }
+                };
+                checkIfNewInterview();
+            }, []);
+
+            useEffect(() => {
+                localStorage.setItem('activeQuestionIndex', activeQuestionIndex.toString());
+            }, [activeQuestionIndex]);
+        then update the interface props on both files to:
+            interface RecordAnswerProps {
+                mockInterviewQuestion: any[];
+                activeQuestionIndex: number;
+                interviewData: typeof MockInterview.$inferSelect | undefined;
+                isNewInterview: boolean;
+                answeredQuestions: Set<number>;
+                setAnsweredQuestions: React.Dispatch<React.SetStateAction<Set<number>>>;
+                onAnswerSaved: (index: number) => void;
+            }
+        update the const RecordAnswer dynamic import to :
+            const RecordAnswer = dynamic<RecordAnswerProps>(() => import('./_components/record-answer') as Promise<{ default: React.ComponentType<RecordAnswerProps> }>, {
+                ssr: false,
+            })
+        update the Record answer section to:
+            <RecordAnswer
+                mockInterviewQuestion={mockInterviewQuestion}
+                activeQuestionIndex={activeQuestionIndex}
+                interviewData={interviewData}
+                isNewInterview={isNewInterview}
+                answeredQuestions={answeredQuestions}
+                setAnsweredQuestions={setAnsweredQuestions}
+                onAnswerSaved={(index) => {
+                    setAnsweredQuestions(prev => {
+                        const newSet = new Set(prev);
+                        newSet.add(index);
+                        return newSet;
+                    });
+                    setIsNewInterview(false);
+                }}
+            />
+        in record-answer.tsx update const RecordAnswer to:
+            const RecordAnswer: React.FC<RecordAnswerProps> = ({ mockInterviewQuestion, activeQuestionIndex, interviewData, isNewInterview, answeredQuestions, setAnsweredQuestions, onAnswerSaved }) => {
+                const [userAnswer, setUserAnswer] = useState('');
+                const { user } = useUser();
+                const [loading, setLoading] = useState<boolean>(false);
+
+                useEffect(() => {
+                    if (typeof window !== 'undefined') {
+                        const savedAnswers = localStorage.getItem('answeredQuestions');
+                        if (isNewInterview) {
+                            localStorage.removeItem('answeredQuestions');
+                            setAnsweredQuestions(new Set());
+                        } else if (savedAnswers) {
+                            setAnsweredQuestions(new Set(JSON.parse(savedAnswers)));
+                        }
+                    }
+                }, [isNewInterview, setAnsweredQuestions]);
+
+                useEffect(() => {
+                    if (answeredQuestions.size > 0) {
+                        localStorage.setItem('answeredQuestions', JSON.stringify(Array.from(answeredQuestions)));
+                    }
+                }, [answeredQuestions]);
+
+                //rest of code
+            }
+        now it should be persistent, use cursor chat to fix any pending errors missed here
+
+
+            
+Add loading skeleton to app
+    run npm i react-loading-skeleton
+    import the following in src\app\dashboard\interview\[interviewId]\start\page.tsx:
+        import Skeleton from 'react-loading-skeleton'
+        import 'react-loading-skeleton/dist/skeleton.css'
+    update the div containing the interview questions and webcam to this:
+        <div className='flex-grow grid grid-cols-1 md:grid-cols-2 gap-10 mb-6'>
+            {mockInterviewQuestion.length > 0 ? (
+                <InterviewQuestions
+                    mockInterviewQuestion={mockInterviewQuestion}
+                    activeQuestionIndex={activeQuestionIndex}
+                />
+            ) : (
+                <Skeleton height={500} />
+            )}
+            {mockInterviewQuestion.length > 0 ? (
+                <RecordAnswer
+                    mockInterviewQuestion={mockInterviewQuestion}
+                    activeQuestionIndex={activeQuestionIndex}
+                    interviewData={interviewData}
+                    isNewInterview={true}
+                    onAnswerSaved={(index) => setAnsweredQuestions(prev => new Set(prev).add(index))}
+                />
+            ) : (
+                <Skeleton height={300} className="my-20" />
+            )}
+        </div>
+    now we want the record button under the webcam to have a loading skeleton too but it's rendered from record-answer.tsx, adding a skeleton from there will conflict with the existing loading state there, we can create a new method to handle it but thats just too much detail for one button skeleton
+    lets style the button skeleton by updating the record answer skeleton from <Skeleton height={300} className="my-20" /> to:
+        <div>
+            <Skeleton height={300} className="my-20" />
+            <div className='flex justify-center'>
+                <Skeleton height={40} width={120} className="mt-4" />
+            </div>
+        </div>
+
+    the color is this white ugly color so we wrap the root layout ThemeProvider with the skeleton theme so we don't have to set it everytime again and all skeletons have the same theme
+        <SkeletonTheme baseColor="#313131" highlightColor='#525252'> //where the baseColor and highlightColor are customs, you can change this as you like
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <ModalProvider>
+                {children}
+              </ModalProvider>
+            </ThemeProvider>
+        </SkeletonTheme>
+        and import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'; to the root layout.
+
+    add a loading skeleton to the buttons under the seperator:
+        <div className='flex justify-evenly gap-6'>
+            {mockInterviewQuestion.length > 0 ? (
+                <>
+                    {activeQuestionIndex > 0 && <Button
+                        className="shadow-[0_0_0_3px_#000000_inset] px-6 py-2 mt-1 bg-transparent border border-black dark:border-white dark:text-white text-black rounded-lg font-bold transform hover:-translate-y-1 transition duration-400"
+                        variant="outline"
+                        onClick={() => setActiveQuestionIndex(activeQuestionIndex - 1)}
+                    >
+                        Previous Question
+                    </Button>}
+                    {activeQuestionIndex != mockInterviewQuestion?.length - 1 && <Button
+                        className="shadow-[0_0_0_3px_#000000_inset] px-6 py-2 mt-1 bg-transparent border border-black dark:border-white dark:text-white text-black rounded-lg font-bold transform hover:-translate-y-1 transition duration-400"
+                        variant="outline"
+                        onClick={() => setActiveQuestionIndex(activeQuestionIndex + 1)}
+                        disabled={!answeredQuestions.has(activeQuestionIndex)}
+                    >
+                        Next Question
+                    </Button>}
+                    {activeQuestionIndex == mockInterviewQuestion?.length - 1 && <Button
+                        className="shadow-[0_0_0_3px_#000000_inset] px-6 py-2 mt-1 bg-transparent border border-black dark:border-white dark:text-white text-black rounded-lg font-bold transform hover:-translate-y-1 transition duration-400"
+                        variant="outline"
+                        onClick={handleClick}
+                    >
+                        End Interview
+                    </Button>}
+                </>
+            ) : (
+                <Skeleton height={40} width={200} count={1} className="mx-2" />
+            )}
+        </div>
+    we can go alot further to style the skeleton for each line in the questions component to make it more realistic, but i'll just leave it here as a challenge if you want to delve deeper into it
+    now we comment out loading: () => <p>Loading...</p> in const RecordAnswer = dynamic<RecordAnswerProps>(() => import('./_components/record-answer')) method
+    #WIP add skeleon to start interview page where user will grant webcam permissions(https://www.youtube.com/watch?v=g74Q0wRc6BQ)(this can be a challenge to the viewers)
+
+
+FEEDBACK PAGE
+    display feeback page on a drawing board, timestamp: 3:04:00
+    create src\app\dashboard\interview\[interviewId]\feedback\page.tsx, tsrafce into it and name it Feedback
+    now we route our End Interview button from src\app\dashboard\interview\[interviewId]\start\page.tsx wih our transition feature:
+        first we import { useTransitionNavigation } from '@/lib/transition' in src\app\dashboard\interview\[interviewId]\start\page.tsx
+        add const { transitionTo } = useTransitionNavigation(); under const activeQuestionIndex in const StartInterview
+        add this under const transitionTo:
+            const handleClick = () => {
+                transitionTo('/dashboard/interview/'+interviewData?.mockId+'/feedback');
+            };
+        now we add onClick={handleClick} to the End Interview button
+    in src\app\dashboard\interview\[interviewId]\feedback\page.tsx we replace Feedback with:
+        <div className='p-10'>
+            <h2 className='text-3xl font-bold text-green-500'>
+                Well Done!
+            </h2>
+            <h2 className='font-bold text-2xl'>
+                Below are your Results and Feedback
+            </h2>
+            <h2 className='text-[#1c4b82] text-lg my-3'>
+                Overall Rating: <strong>
+                70%
+                </strong>
+            </h2>
+            <h2 className='text-sm text-gray-700'>
+                Below are your Interview Questions and best Answers generated by AI to serve as a scheme of work.
+            </h2>
+        </div>
+    now we add the function to fetch the particular details of the interview from the db
+    update the type:
+        type FeedbackItem = typeof UserAnswer.$inferSelect
+    and declare it in the main method like so:
+        const Feedback = ({ params }: { params: { interviewId: string } }) =>
+    add this new method in const Feedback just above the return function
+        const GetFeedback = async () => {
+            const result = await db.select()
+            .from(UserAnswer)
+            .where(eq(UserAnswer.mockIdRef, params.interviewId))
+            .orderBy(UserAnswer.id)
+
+            console.log(result);
+        }
+    and import:
+        import { db } from '../../../../../../utils/db'
+        import { UserAnswer } from '../../../../../../utils/schema'
+        import { eq } from 'drizzle-orm'
+
+    add the useEffect above const GetFeedback and add 'use client' since we're using useEffect:
+        useEffect(() => {
+            GetFeedback();
+        }, [])
+    now simulate an interview and reach the feedback page, then check browswer console for the logges info from db
+    now to show the feedback in page we start by installing a collapsible component from shadcn
+        run npx shadcn-ui@latest add collapsible to add it to your components
+    add these imports from the docs
+        import {
+            Collapsible,
+            CollapsibleContent,
+            CollapsibleTrigger,
+        } from "@/components/ui/collapsible"
+    add the below code under the last h2 in return function:
+        {feedbackList && feedbackList.map((item, index) => (
+            <Collapsible>
+            <CollapsibleTrigger>Can I use this in my project?</CollapsibleTrigger>
+            <CollapsibleContent>
+                Yes. Free to use for personal and commercial projects. No attribution
+                required.
+            </CollapsibleContent>
+            </Collapsible>
+        ))}
+        where the collapsible tag is the default pasted from shadcn
+    add key={index} to the parent collapsible. index as in number of questions which is 5
+    replace the string in <CollapsibleTrigger> with {item.question}
+    stlyle the <CollapsibleTrigger> with:
+        className='p-2 bg-[#999999] dark:bg-[#0a0a0a] rounded-lg flex justify-between my-2 text-left border-black dark:border-gray-600 border gap-7 w-full'
+    add <ChevronsUpDown className="h-5 w-5"/> next to {item.question}
+    replace the string in <CollapsibleContent> with:
+        <div className='flex flex-col gap-2'>
+            <h2 className='text-[#1c4b82] p-2 border rounded-lg'>
+                <strong>Rating: </strong>
+                {item.rating}
+            </h2>
+        </div>
+    check the browser to confirm changes
+    next we add the user answer and correctAnswer and feedback:
+        <h2 className='text-sm text-black bg-red-200 dark:bg-red-200 p-2 border rounded-lg'>
+            <strong>Your Answer: </strong>
+            {item.userAnswer}
+        </h2>
+        <h2 className='text-sm text-black bg-green-200 dark:bg-green-200 p-2 border rounded-lg'>
+            <strong>Correct Answer: </strong>
+            {item.correctAnswer}
+        </h2>
+        <h2 className='text-sm text-black bg-blue-300 dark:bg-blue-300 p-2 border rounded-lg'>
+            <strong>AI Feedback: </strong>
+            {item.feedback}
+        </h2>
+    after checking the outputin the browser, lets move the feedback to the middle and now it makes sense
+    stlyle the parent collapsible with className='mt-7'
+    now we add a button to take us back home using our transition,
+    but our transition uses router.push, in this case we need to use router.replace
+    so we need to rebuild our transition component to use router.replace, thankfully this is very simple tas espcially since we have the component already
+        create src\lib\transition-replace.ts and paste the following code:
+            "use client";
+            import { useRouter } from "next/navigation";
+
+            function sleep(ms: number): Promise<void> {
+                return new Promise((resolve) => setTimeout(resolve, ms));
+            }
+
+            export const useTransitionReplaceNavigation = () => {
+                const router = useRouter();
+
+                const transitionReplaceTo = async (href: string) => {
+                    const body = document.querySelector("body");
+
+                    body?.classList.add("page-transition");
+
+                    await sleep(500);
+                    router.replace(href);
+                    await sleep(500);
+
+                    body?.classList.remove("page-transition");
+                };
+
+                return { transitionReplaceTo };
+            };
+
+    we import our new component:
+        import { useTransitionReplaceNavigation } from '@/lib/transition-replace'
+    add these methods under const feedbackList
+        const { transitionReplaceTo } = useTransitionReplaceNavigation();
+        const handleClick = () => {
+            transitionReplaceTo(`/dashboard`);
+        };
+    now we add our shimmer button from Aceternity ui:
+        <div className="flex justify-center mt-8">
+            <button
+                className="inline-flex h-12 animate-shimmer items-center justify-center rounded-md border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50"
+                onClick={handleClick}
+            >
+                Back Home
+            </button>
+        </div>
+    now when we click the button we should not be able to go back to the feedback page
+   
+
+DISPLAY INTERVIEW LIST ON DASHBOARD
+    display layout on a drawing board, timestamp: 3:18:40
+    create src\app\dashboard\_components\interview-list.tsx tsrafce into it and name it InterviewList
+    goto src\app\dashboard\page.tsx and add the InterviewList component just below the div containing <AddNewInterview />
+    and import InterviewList from './_components/interview-list'
+    we can now see the text in our browser
+    back in our interview-list.tsx, update the type props to:
+        type Props = {
+            interviews: Array<typeof MockInterview.$inferSelect>;
+        }
+    update the main method to:
+        const InterviewList = ({ interviews }: Props) =>
+    add the following in the mainmethod above the return function:
+        const {user}=useUser();
+        const [interviewList, setInterviewList] = useState<Array<typeof MockInterview.$inferSelect>>([]);
+
+        useEffect(()=>{
+            user&&GetInterviewList();
+        },[user])
+
+        const GetInterviewList=async()=>{
+            const result=await db.select()
+            .from(MockInterview)
+            .where(eq(MockInterview.createdBy, user?.primaryEmailAddress?.emailAddress ?? ''))
+            .orderBy(desc(MockInterview.id))
+
+            console.log(result);
+            setInterviewList(result);
+        }
+    add 'use client' to the top of the page
+    and import the following:
+        import { useUser } from '@clerk/nextjs'
+        import React, { useEffect, useState } from 'react'
+        import { db } from '../../../../utils/db';
+        import { MockInterview } from '../../../../utils/schema';
+        import { desc, eq } from 'drizzle-orm';
+    back in src\app\dashboard\page.tsx lets declare the interview list types
+    first we update the types with:
+        type Props = {
+            interviews: Array<typeof MockInterview.$inferSelect>;
+        }
+    update the dashboard method with the new type:
+        const Dashboard = ({ interviews }: Props) =>
+    update the interview list component:
+        <InterviewList
+            interviews={interviews}
+        />
+    now when we check our browser console we should see all our past interviews(14 in my case)
+    replace the InterviewList string in the return function div with the below code:
+        <h2 className='font-medium text-xl'>Past Interviews</h2>
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
+                {interviewList && interviewList.map((interview, index) => (
+                    <InterviewItemCard
+                        key={index}
+                    />
+                ))}
+            </div>
+    create src\app\dashboard\_components\interview-item-card.tsx and name it InterviewItemCard, we will build it up shortly from Aceternity ui
+    now when we check the browser we see it has populated 14 times
+    update the type in src\app\dashboard\_components\interview-item-card.tsx and declare it with the below code:
+        type Props = {
+            interview: typeof MockInterview.$inferSelect;
+        }
+
+        const InterviewItemCard = ({ interview }: Props) =>
+    update the InterviewItemCard in src\app\dashboard\_components\interview-list.tsx to:
+        <InterviewItemCard
+            interview={interview}
+            key={index}
+        />
+    continu from configuring interview-item-card.tsx as i am still looking for a way to style the card
+    
+#WIP trying the new expandable card component on interviewList card(hopefully i can figure it out)
+    add hooks\use-outside-click.ts and copy the code from ace docs
+    add the following imports:
+        "use client";
+        import Image from "next/image";
+        import React, { useEffect, useId, useRef, useState } from "react";
+        import { AnimatePresence, motion } from "framer-motion";
+        import { useOutsideClick } from "@/hooks/use-outside-click";
+    next add this code block from ace:
+        const [active, setActive] = useState<(typeof cards)[number] | boolean | null>(
+            null
+        );
+        const id = useId();
+        const ref = useRef<HTMLDivElement>(null);
+
+        useEffect(() => {
+            function onKeyDown(event: KeyboardEvent) {
+                if (event.key === "Escape") {
+                    setActive(false);
+                }
+            }
+
+            if (active && typeof active === "object") {
+                document.body.style.overflow = "hidden";
+            } else {
+                document.body.style.overflow = "auto";
+            }
+
+            window.addEventListener("keydown", onKeyDown);
+            return () => window.removeEventListener("keydown", onKeyDown);
+        }, [active]);
+
+        useOutsideClick(ref, () => setActive(null));
+    add export const CloseIcon and const cards from ace docs under const InterviewItemCard before export default InterviewItemCard
+    we will edit the content from ace docs now because we get an error since we have not permitted our app to take images from ace url
+    change all the src image in const cards to a dummy image from public like so: src: "/avatar.png",
+    now our app works but for some reason we're seeing a hundred of them
+    let's start by removing the text in the <p> in const card and replacing with createdAt from our database
+    first replace the content of the <p> with:
+        <h2 className="font-bold text-black dark:text-white">Created At:{interview.createdAt}</h2>
+    find card.map (most like line 139 thereabout), replace the onclick function in the motion.div with:
+        onClick={() => setActive({ ...card, content: typeof card.content === 'function' ? () => card.content(interview) : card.content })}
+    go back to the card we edited the <p> and replace the content method above with:
+        content: (interview: typeof MockInterview.$inferSelect)
+    lastly, add the interview prop in content in typeof active.content === "function" like so: 
+        {typeof active.content === "function"
+            ? active.content(interview)
+            : active.content}
+    now when we check that particular card we should see our createdAt
+    we want to change the title and description of each card to match our interviews
+    when we change  title: interview?.jobPosition, and description: interview?.jobExperience,
+    we get a type error, to resolve this we need to move the whole const cards inside const InterviewItemCard
+    now we can see our card in the browser with the appropriate name and description
+    locate ctaText by CTRL + click on ctaText and change the color to suit the app default color like so:
+        className="px-4 py-3 text-sm rounded-full font-bold bg-[#1c4b82] text-white"
+    we're seeing a alot of cards because we have a lot of excess, we solve this by removing all the cards leaving the one we're editing
+    looks weird, and if we change md:grid-cols-3 lg:grid-cols-4 in interview-list.tsx it looks kinda compressed, propbaly because we already have some similar styling in interview-item-card.tsx
+        we fix this by removing grid grid-cols-1 md:grid-cols-2 in the <ul> className
+    #WIP also write logic to either generate image according to interview or set a bunch of images and write logic to pick most appropriate
+    change description in const cards to:
+        description: `${interview?.jobExperience} ${Number(interview?.jobExperience) === 1 ? 'Year' : 'Years'} of Experience`,
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{interview?.jobExperience}
+{Number(interview?.jobExperience) === 1 ? ' Year' : ' Years'} of Experience
+#WIP end interview should be disabled
+    overall rating
+
+Important NOTES:
+ cleanJsonMockResp is the new jsonMockResp
+ InterviewQuestions /> is the new <QuestionsSection />
+ RecordAnswer is the new RecordAnswerSection
+ we have transitions now, check:
+    src\app\dashboard\interview\[interviewId]\page.tsx and src\app\dashboard\_components\add-new-interview.tsx for both instances
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
