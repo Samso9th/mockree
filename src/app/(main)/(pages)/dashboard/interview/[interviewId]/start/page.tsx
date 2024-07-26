@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { db } from '../../../../../../utils/db'
-import { MockInterview } from '../../../../../../utils/schema'
+import { db } from '../../../../../../../../utils/db'
+import { MockInterview } from '../../../../../../../../utils/schema'
 import { eq } from 'drizzle-orm'
 import InterviewQuestions from './_components/interview-questions'
 import dynamic from 'next/dynamic'
@@ -69,19 +69,18 @@ const StartInterview = ({ params }: Props) => {
     };
 
     useEffect(() => {
+        const GetInterviewDetails = async () => {
+            const result = await db.select().from(MockInterview)
+                .where(eq(MockInterview.mockId, params.interviewId))
+
+            const jsonMockResp = (result[0].jsonMockResp).replace(/^\{/, '[').replace(/\}$/, ']').replace(/\\/g, '').replace(/"(\{.*?\})"/g, '$1');
+            const cleanJsonMockResp = JSON.parse(jsonMockResp)
+            console.log(cleanJsonMockResp)
+            setMockInterviewQuestion(cleanJsonMockResp);
+            setInterviewData(result[0]);
+        }
         GetInterviewDetails();
-    }, []);
-
-    const GetInterviewDetails = async () => {
-        const result = await db.select().from(MockInterview)
-            .where(eq(MockInterview.mockId, params.interviewId))
-
-        const jsonMockResp = (result[0].jsonMockResp).replace(/^\{/, '[').replace(/\}$/, ']').replace(/\\/g, '').replace(/"(\{.*?\})"/g, '$1');
-        const cleanJsonMockResp = JSON.parse(jsonMockResp)
-        console.log(cleanJsonMockResp)
-        setMockInterviewQuestion(cleanJsonMockResp);
-        setInterviewData(result[0]);
-    }
+    }, [params.interviewId]);
 
     return (
         <div className='flex flex-col'>

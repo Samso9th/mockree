@@ -6,8 +6,8 @@ type Props = { children: React.ReactNode }
 
 const DashboardLayout = (props: Props) => {
   return (
-    <div>
-      <Header />
+    <div className="w-full">
+      {/* <Header /> */}
       <div className="my-20 mx-5 md:mx-20 lg:mx-36">
         {props.children}
         <Toaster />

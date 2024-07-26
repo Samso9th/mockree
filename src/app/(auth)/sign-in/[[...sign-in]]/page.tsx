@@ -18,7 +18,7 @@ export default function Page() {
         <section className="bg-white dark:bg-black text-black dark:text-white">
             <div className="lg:grid lg:min-h-screen lg:grid-cols-12">
                 <section className="relative flex h-32 items-end bg-gray-900 lg:col-span-5 lg:h-full xl:col-span-6">
-                    <img
+                    <Image
                         alt=""
                         src="/interview.jpeg"
                         className="absolute inset-0 h-full w-full object-cover opacity-80"

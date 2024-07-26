@@ -4,7 +4,7 @@ import Image from "next/image";
 import React, { useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useOutsideClick } from "@/hooks/use-outside-click";
-import { MockInterview } from '../../../../utils/schema';
+import { MockInterview } from '../../../../../../utils/schema';
 
 type Props = {
     interview: typeof MockInterview.$inferSelect;
@@ -16,13 +16,16 @@ const InterviewItemCard = ({ interview }: Props) => {
         {
             description: `${interview?.jobExperience} ${Number(interview?.jobExperience) === 1 ? 'Year' : 'Years'} of Experience`,
             title: interview?.jobPosition,
-            src: "/avatar.png",
+            src: `/tch/tch${Math.floor(Math.random() * 14) + 1}.jpg`,
             ctaText: "Retake",
             ctaLink: "https://ui.aceternity.com/templates",
+            ctbText: "Feedback",
+            ctbLink: "https://ui.aceternity.com/templates",
             content: (interview: typeof MockInterview.$inferSelect) => {
                 return (
                     <p>
                         <h2 className="font-bold text-black dark:text-white">Created At: {interview.createdAt}</h2>
+                        <h2 className="font-bold text-black dark:text-white">Starting this Interview again may not provide the same questions as before</h2>
                     </p>
                 );
             },
@@ -122,6 +125,17 @@ const InterviewItemCard = ({ interview }: Props) => {
                                         </motion.p>
                                     </div>
 
+                                    <motion.a
+                                        layout
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 2 }}
+                                        exit={{ opacity: 0 }}
+                                        href={active.ctbLink}
+                                        target="_blank"
+                                        className="px-4 py-3 text-sm rounded-full font-bold bg-[#1c4b82] text-white"
+                                    >
+                                        {active.ctbText}
+                                    </motion.a>
                                     <motion.a
                                         layout
                                         initial={{ opacity: 0 }}

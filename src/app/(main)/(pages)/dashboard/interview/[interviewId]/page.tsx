@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { db } from '../../../../../utils/db'
-import { MockInterview } from '../../../../../utils/schema'
+import { db } from '../../../../../../../utils/db'
+import { MockInterview } from '../../../../../../../utils/schema'
 import { eq } from 'drizzle-orm'
 import Webcam from 'react-webcam'
 import { Lightbulb, WebcamIcon } from 'lucide-react'
@@ -35,17 +35,18 @@ const Interview = ({ params }: Props) => {
         transitionTo(`/dashboard/interview/${params.interviewId}/start`);
     };
 
+
     useEffect(() => {
+        const GetInterviewDetails = async () => {
+            const result = await db.select().from(MockInterview)
+                .where(eq(MockInterview.mockId, params.interviewId))
+
+            setInterviewData(result[0]);
+        }
+
         console.log(params.interviewId)
         GetInterviewDetails();
-    }, [])
-
-    const GetInterviewDetails = async () => {
-        const result = await db.select().from(MockInterview)
-            .where(eq(MockInterview.mockId, params.interviewId))
-
-        setInterviewData(result[0]);
-    }
+    }, [params.interviewId])
 
     const Content = {
         author: user?.firstName || "User",
@@ -160,7 +161,7 @@ const Interview = ({ params }: Props) => {
                                             translateZ="50"
                                             className="text-xl font-bold text-neutral-600 dark:text-white"
                                         >
-                                            Let's Get Started
+                                            Let&apos;s Get Started
                                         </CardItem>
                                         <CardItem
                                             as="p"

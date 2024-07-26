@@ -2,14 +2,14 @@
 
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import Webcam from 'react-webcam'
 import useSpeechToText from 'react-hook-speech-to-text';
 import { Mic, StopCircle } from 'lucide-react'
 import { toast } from 'sonner'
-import { chatSession } from '../../../../../../../utils/geminiAi'
-import { db } from '../../../../../../../utils/db'
-import { UserAnswer } from '../../../../../../../utils/schema'
+import { chatSession } from '../../../../../../../../../utils/geminiAi'
+import { db } from '../../../../../../../../../utils/db'
+import { UserAnswer } from '../../../../../../../../../utils/schema'
 import { useUser } from '@clerk/nextjs'
 import moment from 'moment'
 
@@ -79,7 +79,7 @@ const RecordAnswer: React.FC<RecordAnswerProps> = ({ mockInterviewQuestion, acti
         }
     }
 
-    const UpdateUserAnswer = async () => {
+    const UpdateUserAnswer = useCallback(async () => {
         console.log("Current answer:", userAnswer);
         console.log("Current answer length:", userAnswer.length);
 
@@ -115,13 +115,13 @@ const RecordAnswer: React.FC<RecordAnswerProps> = ({ mockInterviewQuestion, acti
         }
         setUserAnswer('');
         setLoading(false);
-    }
+    }, [userAnswer, activeQuestionIndex, mockInterviewQuestion, interviewData, onAnswerSaved, setAnsweredQuestions, user?.primaryEmailAddress?.emailAddress]); // Added user email dependency
 
     useEffect(() => {
         if (!isRecording && userAnswer.length > 0) {
             UpdateUserAnswer();
         }
-    }, [isRecording, userAnswer]);
+    }, [isRecording, userAnswer, UpdateUserAnswer]);
 
     return (
         <div className='flex flex-col items-center justify-center'>
