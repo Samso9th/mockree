@@ -37,15 +37,20 @@ const Interview = ({ params }: Props) => {
 
 
     useEffect(() => {
-        const GetInterviewDetails = async () => {
-            const result = await db.select().from(MockInterview)
-                .where(eq(MockInterview.mockId, params.interviewId))
+        const fetchInterviewDetails = async () => {
+            try {
+                const response = await fetch(`/api/interviews/${params.interviewId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch interview details');
+                }
+                const data = await response.json();
+                setInterviewData(data);
+            } catch (error) {
+                console.error('Error fetching interview details:', error);
+            }
+        };
 
-            setInterviewData(result[0]);
-        }
-
-        console.log(params.interviewId)
-        GetInterviewDetails();
+        fetchInterviewDetails();
     }, [params.interviewId])
 
     const Content = {

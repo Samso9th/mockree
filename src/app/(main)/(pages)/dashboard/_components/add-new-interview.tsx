@@ -74,12 +74,21 @@ const AddNewInterview = () => {
   };
 
   const generateInterview = async (formData: FormData): Promise<InterviewQuestion[]> => {
-    const InputPrompt = `Given the following variables: Job Title: ${formData.jobPosition}, Job Description (stacks): ${formData.jobDesc}, Years of Experience: ${formData.jobExperience}. Create ${process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT} job interview questions with difficulty levels based on the provided variables. The higher the years of experience or the more complex the job description, the more difficult the questions should be. Provide the questions and answers in JSON format.`;
-    
     try {
-      const result = await chatSession.sendMessage(InputPrompt);
-      const MockJsonResp = result.response.text().replace(/```json|```/g, '');
-      return JSON.parse(MockJsonResp);
+      const response = await fetch('/api/generate-interview', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate interview questions');
+      }
+
+      const data = await response.json();
+      return JSON.parse(data.result);
     } catch (error) {
       console.error("Error generating interview questions:", error);
       throw new Error("Failed to generate interview questions");

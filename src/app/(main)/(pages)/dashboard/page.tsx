@@ -13,17 +13,24 @@ const Dashboard = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/interviews')
-      .then(res => res.json())
-      .then(data => {
+    const fetchInterviews = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch('/api/interviews');
+        if (!response.ok) {
+          throw new Error('Failed to fetch interviews');
+        }
+        const data = await response.json();
         setInterviews(data);
-        setLoading(false);
-      })
-      .catch(err => {
+      } catch (err) {
         console.error('Error fetching interviews:', err);
         setError(err instanceof Error ? err.message : "An unknown error occurred");
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchInterviews();
   }, []);
 
   if (loading) return <div>Loading...</div>;

@@ -17,14 +17,17 @@ const InterviewList = ({ interviews }: Props) => {
     const [interviewList, setInterviewList] = useState<Array<typeof MockInterview.$inferSelect>>([]);
 
     const GetInterviewList = useCallback(async () => {
-        const result = await db.select()
-        .from(MockInterview)
-        .where(eq(MockInterview.createdBy, user?.primaryEmailAddress?.emailAddress ?? ''))
-        .orderBy(desc(MockInterview.id))
-        
-        console.log(result);
-        setInterviewList(result);
-    }, [user])
+        try {
+            const response = await fetch('/api/interviews');
+            if (!response.ok) {
+                throw new Error('Failed to fetch interviews');
+            }
+            const data = await response.json();
+            setInterviewList(data);
+        } catch (error) {
+            console.error('Error fetching interviews:', error);
+        }
+    }, []);
 
     useEffect(() => {
         user && GetInterviewList();
