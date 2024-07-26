@@ -41,12 +41,13 @@ const Interview = ({ params }: Props) => {
             try {
                 const response = await fetch(`/api/interviews/${params.interviewId}`);
                 if (!response.ok) {
-                    throw new Error('Failed to fetch interview details');
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const data = await response.json();
                 setInterviewData(data);
             } catch (error) {
                 console.error('Error fetching interview details:', error);
+                // Optionally, set an error state here to display to the user
             }
         };
 
