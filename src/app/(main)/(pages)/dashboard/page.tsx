@@ -5,23 +5,12 @@ import AddNewInterview from './_components/add-new-interview'
 import InterviewList from './_components/interview-list'
 import { MockInterview } from '../../../../../utils/schema'
 
-type Props = {
-  interviews: Array<{
-    id: number;
-    jsonMockResp: string;
-    jobDesc: string;
-    jobPosition: string;
-    jobExperience: string;
-    createdBy: string;
-    createdAt: string;
-    mockId: string;
-  }>;
-}
+
 
 const Dashboard = () => {
   const [interviews, setInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('/api/interviews')
@@ -32,7 +21,7 @@ const Dashboard = () => {
       })
       .catch(err => {
         console.error('Error fetching interviews:', err);
-        setError(err.message);
+        setError(err instanceof Error ? err.message : "An unknown error occurred");
         setLoading(false);
       });
   }, []);

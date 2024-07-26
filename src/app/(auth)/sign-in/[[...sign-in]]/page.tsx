@@ -21,7 +21,9 @@ export default function Page() {
                     <Image
                         alt=""
                         src="/interview.jpeg"
-                        className="absolute inset-0 h-full w-full object-cover opacity-80"
+                        width={500}
+                        height={500}
+                        className="absolute w-full h-full inset-0 object-cover opacity-80"
                     />
 
                     <div className="hidden lg:relative lg:block lg:p-12">

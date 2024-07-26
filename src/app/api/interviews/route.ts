@@ -13,7 +13,8 @@ export async function GET() {
     return NextResponse.json(interviews);
   } catch (error) {
     console.error('Error fetching interviews:', error);
-    return NextResponse.json({ error: 'Failed to fetch interviews' }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ error: 'Failed to fetch interviews', details: errorMessage }, { status: 500 });
   }
 }
 
