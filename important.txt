@@ -2355,6 +2355,9 @@ Build errors
             ignoreBuildErrors: true,
         },
         on top of images inside const nextConfig in next.config.mjs
+    set enviroment variables in vercel
+        for production, remove NEXT_PUBLIC_ from all your codebase for variables with key in the(sensitive info)
+
 
 
 

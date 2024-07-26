@@ -1,6 +1,6 @@
 import { defineConfig } from 'drizzle-kit'
 
-const dbUrl = process.env.NEXT_PUBLIC_DRIZZLE_DB_URL;
+const dbUrl = process.env.DRIZZLE_DB_URL; //removed NEXT_PUBLIC_
 if (!dbUrl) {
   throw new Error('Database URL is not defined');
 }
