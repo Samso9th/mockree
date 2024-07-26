@@ -5,13 +5,13 @@ import { eq } from 'drizzle-orm';
 
 export async function GET(
   request: Request,
-  { params }: { params: { interviewId: string } }
+  { params }: { params: { interviewId: number } }
 ) {
   try {
     const interview = await db
       .select()
       .from(MockInterview)
-      .where(eq(MockInterview.id, parseInt(params.interviewId, 10)))
+      .where(eq(MockInterview.id, params.interviewId))
       .limit(1);
 
     const result = interview[0];
