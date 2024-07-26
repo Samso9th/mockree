@@ -12,11 +12,17 @@ export async function POST(request: Request) {
 
   try {
     const { jobPosition, jobDesc, jobExperience } = await request.json();
-    const InputPrompt = `Given the following variables: Job Title: ${jobPosition}, Job Description (stacks): ${jobDesc}, Years of Experience: ${jobExperience}. Create ${process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT} job interview questions with difficulty levels based on the provided variables. The higher the years of experience or the more complex the job description, the more difficult the questions should be. Provide the questions and answers in JSON format.`;
+    const InputPrompt = `Generate ${process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT} interview questions for a ${jobPosition} position with ${jobExperience} years of experience. Job description: ${jobDesc}. Return only a JSON array of objects, each with 'question', 'answer', and 'difficulty' fields.`;
 
     const result = await model.generateContent(InputPrompt);
     const response = await result.response;
-    const text = response.text();
+    let text = response.text();
+
+    // Remove any markdown formatting if present
+    text = text.replace(/```json\n?|\n?```/g, '').trim();
+
+    // Validate JSON
+    JSON.parse(text);
 
     return NextResponse.json({ result: text });
   } catch (error) {

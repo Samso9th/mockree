@@ -91,7 +91,7 @@ const AddNewInterview = () => {
       return JSON.parse(data.result);
     } catch (error) {
       console.error("Error generating interview questions:", error);
-      throw new Error("Failed to generate interview questions");
+      throw error;
     }
   };
 
@@ -128,7 +128,7 @@ const AddNewInterview = () => {
       });
     } catch (error) {
       console.error("Error creating interview:", error);
-      toast.error("Failed to create interview. Please try again.");
+      toast.error(`Failed to create interview: ${(error as Error).message || 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
