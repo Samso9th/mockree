@@ -2357,8 +2357,8 @@ Build errors
         on top of images inside const nextConfig in next.config.mjs
     set enviroment variables in vercel
         for production, remove NEXT_PUBLIC_ from all your codebase for variables with key in the(sensitive info) aside clerk
-        create src\app\api\interviews\route.ts and paste in the code
-        modify src\app\(main)\(pages)\dashboard\page.tsx to fetch data from api route
+    create src\app\api\interviews\route.ts and paste in the code
+    modify src\app\(main)\(pages)\dashboard\page.tsx and src\app\(main)\(pages)\dashboard\_components\add-new-interview.tsx to fetch and post data from api route
 
 
 

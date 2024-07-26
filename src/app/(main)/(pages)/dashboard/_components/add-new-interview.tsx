@@ -93,21 +93,30 @@ const AddNewInterview = () => {
     setLoading(true);
     try {
       const questions = await generateInterview(formData);
-      const resp = await db.insert(MockInterview).values({
-        mockId: uuidv4(),
-        jsonMockResp: JSON.stringify(questions),
-        ...formData,
-        createdBy: user?.primaryEmailAddress?.emailAddress ?? '',
-        createdAt: moment().format('DD-MM-YYYY')
-      }).returning({ mockId: MockInterview.mockId });
+      const response = await fetch('/api/interviews', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          jsonMockResp: JSON.stringify(questions),
+          createdBy: user?.primaryEmailAddress?.emailAddress ?? '',
+          createdAt: moment().format('DD-MM-YYYY')
+        }),
+      });
 
-      if (resp && resp[0]?.mockId) {
-        setOpen(false);
-        transitionTo(`dashboard/interview/${resp[0].mockId}`);
-        toast.success("Interview Questions Generated", {
-          description: moment().format('DD-MM-YYYY'),
-        });
+      if (!response.ok) {
+        throw new Error('Failed to create interview');
       }
+
+      const data = await response.json();
+
+      setOpen(false);
+      transitionTo(`dashboard/interview/${data.mockId}`);
+      toast.success("Interview Questions Generated", {
+        description: moment().format('DD-MM-YYYY'),
+      });
     } catch (error) {
       console.error("Error creating interview:", error);
       toast.error("Failed to create interview. Please try again.");
