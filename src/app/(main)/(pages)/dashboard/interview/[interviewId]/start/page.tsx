@@ -1,9 +1,6 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { db } from '../../../../../../../../utils/db'
-import { MockInterview } from '../../../../../../../../utils/schema'
-import { eq } from 'drizzle-orm'
 import InterviewQuestions from './_components/interview-questions'
 import dynamic from 'next/dynamic'
 import { Button } from '@/components/ui/button'
@@ -12,18 +9,16 @@ import { useTransitionNavigation } from '@/lib/transition'
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 
-// Add this interface
 interface RecordAnswerProps {
     mockInterviewQuestion: any[];
     activeQuestionIndex: number;
-    interviewData: typeof MockInterview.$inferSelect | undefined;
+    interviewData: any;
     isNewInterview: boolean;
     answeredQuestions: Set<number>;
     setAnsweredQuestions: React.Dispatch<React.SetStateAction<Set<number>>>;
     onAnswerSaved: (index: number) => void;
 }
 
-// Update the dynamic import
 const RecordAnswer = dynamic<RecordAnswerProps>(() => import('./_components/record-answer') as Promise<{ default: React.ComponentType<RecordAnswerProps> }>, {
     ssr: false,
 })
@@ -35,8 +30,7 @@ type Props = {
 }
 
 const StartInterview = ({ params }: Props) => {
-
-    const [interviewData, setInterviewData] = useState<typeof MockInterview.$inferSelect | undefined>();
+    const [interviewData, setInterviewData] = useState<any | undefined>();
     const [mockInterviewQuestion, setMockInterviewQuestion] = useState<any[]>([]);
     const [activeQuestionIndex, setActiveQuestionIndex] = useState(() => {
         if (typeof window !== 'undefined') {
@@ -69,17 +63,22 @@ const StartInterview = ({ params }: Props) => {
     };
 
     useEffect(() => {
-        const GetInterviewDetails = async () => {
-            const result = await db.select().from(MockInterview)
-                .where(eq(MockInterview.mockId, params.interviewId))
-
-            const jsonMockResp = (result[0].jsonMockResp).replace(/^\{/, '[').replace(/\}$/, ']').replace(/\\/g, '').replace(/"(\{.*?\})"/g, '$1');
-            const cleanJsonMockResp = JSON.parse(jsonMockResp)
-            console.log(cleanJsonMockResp)
-            setMockInterviewQuestion(cleanJsonMockResp);
-            setInterviewData(result[0]);
-        }
-        GetInterviewDetails();
+        const fetchInterviewDetails = async () => {
+            try {
+                const response = await fetch(`/api/interviews/${params.interviewId}/details`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch interview details');
+                }
+                const data = await response.json();
+                setInterviewData(data);
+                const jsonMockResp = (data.jsonMockResp).replace(/^\{/, '[').replace(/\}$/, ']').replace(/\\/g, '').replace(/"(\{.*?\})"/g, '$1');
+                const cleanJsonMockResp = JSON.parse(jsonMockResp);
+                setMockInterviewQuestion(cleanJsonMockResp);
+            } catch (error) {
+                console.error('Error fetching interview details:', error);
+            }
+        };
+        fetchInterviewDetails();
     }, [params.interviewId]);
 
     return (

@@ -2359,7 +2359,9 @@ Build errors
         for production, remove NEXT_PUBLIC_ from all your codebase for variables with key in the(sensitive info) aside clerk
     create src\app\api\interviews\route.ts and paste in the code
     modify src\app\(main)\(pages)\dashboard\page.tsx and src\app\(main)\(pages)\dashboard\_components\add-new-interview.tsx to fetch and post data from api route
-
+    not just those guys, basically every singe function calling from the database needs to go through the api routes
+        [interviewId]/page
+        
 
 
 
