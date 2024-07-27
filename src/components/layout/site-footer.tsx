@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 
 import { Icons } from "../shared/icons";
+import { NewsletterForm } from "../forms/newsletter-form";
 
 export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
   return (
@@ -31,7 +32,7 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
           </div>
         ))}
         <div className="flex flex-col  items-end md:col-span-2">
-          NewsLetterForm
+          <NewsletterForm />
         </div>
       </div>
 
@@ -61,7 +62,7 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
             </Link>
             . Deployed on{" "}
             <Link
-              href="https://vercel.co"
+              href="https://vercel.com"
               target="_blank"
               rel="noreferrer"
               className="font-medium underline underline-offset-4"

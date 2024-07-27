@@ -72,7 +72,7 @@ repeat for signin
 update the .env.local file with the secret sign in keys
 check localhost server and the auth domain now belong to us
 
-#WIP clerk elements
+#WIP clerk elements done✅
     goto clerk elements docs and run npm install @clerk/elements in terminal
     make sure that your moduleResolution in tsconfig.json is set to bundler
     replace the <signIn/> drop in component with:
@@ -251,7 +251,7 @@ and this:                   <form>
                                 </div>
                             </form>
                             to the drawer description annd explain the code
-#WIP drawer buttons, timestamp: 1:11:30
+#WIP drawer buttons, timestamp: 1:11:30 done✅
 
 //more efficient way open and close the drawer
 //import { useState } together with react from react
@@ -285,7 +285,7 @@ by editing the onSubmit to: const onSubmit = (e: React.FormEvent<HTMLFormElement
                                 e.preventDefault();
                                 console.log('jobPosition', jobDesc, jobExperience)
                             }
-#WIP butt, the modal still remains, we need to fix that later, now we can see our data in the console
+#WIP done✅ the modal still remains, we need to fix that later, now we can see our data in the console
 
 TIME TO ACTUALLY SET UP GOOGLE Gemini
 now head to ai.google.dev and sign in if not already
@@ -400,7 +400,7 @@ comment out the openDrawer usestate to show that you can click anywhere on the b
 then add 'onClick={() => setOpenDrawer(true)}' to the parent div in the DrawerTrigger, this will now open the drawer when clicked
 add 'onClick={() => setOpenDrawer(false)}' to the cancel button
 
-#WIP minor issue: dragging the drawer down does not let the logic know that drawer has been closed, hence it won't open again till the page is refreshed
+#WIP (no longer using drawer) minor issue: dragging the drawer down does not let the logic know that drawer has been closed, hence it won't open again till the page is refreshed
 
 add this: if (resp) {
                 setOpenDrawer(false)
@@ -744,9 +744,9 @@ and import { Lightbulb, WebcamIcon } from 'lucide-react'
 goto .env and add NEXT_PUBLIC_INFORMATION="Please grant our model access to your webcam and microphone to initiate your AI-generated mock interview. In the free tier, you will answer 5 questions with difficulty levels based on your years of experience. At the end, you will receive a detailed report based on your responses. Note: We will never record or store your video for any reason, and you can disable webcam and microphone access at your discretion."
 add this h2 under the Lightbulb h2 and call in the variable we added in .env: <h2 className=''mt-3 text-yellow-500'>{process.env.NEXT_PUBLIC_INFORMATION}</h2>
 
-#WIP customize the info, remove it from the env and use some Aceternity styling or something
+#WIP customize the info, remove it from the env and use some Aceternity styling or something done✅
 #ACE Direction Aware hover
-#WIP convert logo to favicon
+#WIP convert logo to favicon done✅
 #ACE Background Overlay Card propbaly on the + Add New button
 #ACE Bento Grid
 #ACE Glare Card for created interviews
@@ -1194,7 +1194,7 @@ Page transition animation
 
 
 
-#WIP fix console err:
+#WIP fix console err: done✅
     ⨯ ReferenceError: window is not defined
     at __webpack_require__ (C:\Users\USER\Desktop\Setups\ai_mock_interview\mocker\.next\server\webpack-runtime.js:33:43)
     at eval (./src/app/dashboard/interview/[interviewId]/start/_components/record-answer.tsx:13:83)
@@ -1730,7 +1730,7 @@ Set function to limit user from answering same question twice
         Accessibility: Add proper aria labels to form inputs for better accessibility.
         Loading State: Show a loading indicator for the entire form while submitting, not just the button.
 
-#WIP we need to set the button so that it will only be enabled when all questions have been answered(done✅)
+#WIP done✅ we need to set the button so that it will only be enabled when all questions have been answered(done✅)
     a way we can solve this is disabling the Next question button until answer for a present question is recorded
     to achieve this:
         add const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(new Set()); under const { transitionTo } = useTransitionNavigation(); in src\app\dashboard\interview\[interviewId]\start\page.tsx
@@ -1834,6 +1834,15 @@ Set function to limit user from answering same question twice
                 //rest of code
             }
         now it should be persistent, use cursor chat to fix any pending errors missed here
+        new fix, update src\app\(main)\(pages)\dashboard\interview\[interviewId]\start\page.tsx const handleclick to:   
+            const handleClick = () => {
+                // Clear localStorage
+                localStorage.removeItem('activeQuestionIndex');
+                localStorage.removeItem('answeredQuestions');
+    
+                // Navigate to feedback page
+                transitionTo('/dashboard/interview/' + interviewData?.mockId + '/feedback');
+            };
 
 
             
@@ -1921,7 +1930,8 @@ Add loading skeleton to app
         </div>
     we can go alot further to style the skeleton for each line in the questions component to make it more realistic, but i'll just leave it here as a challenge if you want to delve deeper into it
     now we comment out loading: () => <p>Loading...</p> in const RecordAnswer = dynamic<RecordAnswerProps>(() => import('./_components/record-answer')) method
-    #WIP add skeleon to start interview page where user will grant webcam permissions(https://www.youtube.com/watch?v=g74Q0wRc6BQ)(this can be a challenge to the viewers)
+
+    #WIP (this can be a challenge to the viewers) add skeleon to start interview page where user will grant webcam permissions(https://www.youtube.com/watch?v=g74Q0wRc6BQ)
 
 
 FEEDBACK PAGE
@@ -2143,7 +2153,7 @@ DISPLAY INTERVIEW LIST ON DASHBOARD
         />
     continu from configuring interview-item-card.tsx as i am still looking for a way to style the card
     
-#WIP trying the new expandable card component on interviewList card(hopefully i can figure it out)
+#WIP done✅ trying the new expandable card component on interviewList card(hopefully i can figure it out)
     add hooks\use-outside-click.ts and copy the code from ace docs
     add the following imports:
         "use client";
@@ -2201,6 +2211,7 @@ DISPLAY INTERVIEW LIST ON DASHBOARD
     we're seeing a alot of cards because we have a lot of excess, we solve this by removing all the cards leaving the one we're editing
     looks weird, and if we change md:grid-cols-3 lg:grid-cols-4 in interview-list.tsx it looks kinda compressed, propbaly because we already have some similar styling in interview-item-card.tsx
         we fix this by removing grid grid-cols-1 md:grid-cols-2 in the <ul> className
+        
     #WIP also write logic to either generate image according to interview or set a bunch of images and write logic to pick most appropriate
     change description in const cards to:
         description: `${interview?.jobExperience} ${Number(interview?.jobExperience) === 1 ? 'Year' : 'Years'} of Experience`,
