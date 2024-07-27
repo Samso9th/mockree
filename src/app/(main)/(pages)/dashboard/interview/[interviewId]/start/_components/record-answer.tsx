@@ -12,6 +12,7 @@ import { db } from '../../../../../../../../../utils/db'
 import { UserAnswer } from '../../../../../../../../../utils/schema'
 import { useUser } from '@clerk/nextjs'
 import moment from 'moment'
+import axios from 'axios'; // Add this import
 
 interface RecordAnswerProps {
     mockInterviewQuestion: any[];
@@ -91,31 +92,38 @@ const RecordAnswer: React.FC<RecordAnswerProps> = ({ mockInterviewQuestion, acti
         }
 
         setLoading(true);
-        const feedbackPrompt = "Question:" + mockInterviewQuestion[activeQuestionIndex]?.question + ", User Answer:" + userAnswer + ",Given the interview question and the user's answer, please provide: " + "A rating (1-10) of the answer's quality and relevance to the question " + "Constructive feedback for improvement " + "Suggestions for additional content or clarification " + "Format the response as a JSON object with fields for 'rating', 'feedback', 'strengths', and 'improvements'. Limit the total response to 3-5 concise sentences";
-        const result = await chatSession.sendMessage(feedbackPrompt);
-        const MockJsonResp = (result.response.text()).replace('```json', '').replace('```', '');
-        console.log(MockJsonResp);
-        const JsonFeedbackResp = JSON.parse(MockJsonResp);
+        try {
+            const response = await axios.post('api/interviews/feedback', {
+                type: 'generate_feedback',
+                prompt: `Question: ${mockInterviewQuestion[activeQuestionIndex]?.question}, User Answer: ${userAnswer}. Given the interview question and the user's answer, please provide: A rating (1-10) of the answer's quality and relevance to the question, Constructive feedback for improvement, Suggestions for additional content or clarification. Format the response as a JSON object with fields for 'rating', 'feedback', 'strengths', and 'improvements'. Limit the total response to 3-5 concise sentences`,
+            });
 
-        const resp = await db.insert(UserAnswer).values({
-            mockIdRef: interviewData?.mockId ?? '',
-            question: mockInterviewQuestion[activeQuestionIndex]?.question ?? '',
-            correctAnswer: mockInterviewQuestion[activeQuestionIndex]?.answer ?? '',
-            userAnswer: userAnswer ?? '',
-            feedback: JsonFeedbackResp?.feedback ?? '',
-            rating: JsonFeedbackResp?.rating ?? 0,
-            userEmail: user?.primaryEmailAddress?.emailAddress ?? '',
-            createdAt: moment().format('DD-MM-YYYY')
-        })
+            const JsonFeedbackResp = response.data;
 
-        if (resp) {
-            toast('Answer Saved Successfully');
-            onAnswerSaved(activeQuestionIndex);
-            setAnsweredQuestions(prev => new Set(prev).add(activeQuestionIndex));
+            const resp = await db.insert(UserAnswer).values({
+                mockIdRef: interviewData?.mockId ?? '',
+                question: mockInterviewQuestion[activeQuestionIndex]?.question ?? '',
+                correctAnswer: mockInterviewQuestion[activeQuestionIndex]?.answer ?? '',
+                userAnswer: userAnswer ?? '',
+                feedback: JsonFeedbackResp?.feedback ?? '',
+                rating: JsonFeedbackResp?.rating ?? 0,
+                userEmail: user?.primaryEmailAddress?.emailAddress ?? '',
+                createdAt: moment().format('DD-MM-YYYY')
+            });
+
+            if (resp) {
+                toast('Answer Saved Successfully');
+                onAnswerSaved(activeQuestionIndex);
+                setAnsweredQuestions(prev => new Set(prev).add(activeQuestionIndex));
+            }
+            setUserAnswer('');
+        } catch (error) {
+            console.error('Error generating feedback:', error);
+            toast('Error generating feedback. Please try again.');
+        } finally {
+            setLoading(false);
         }
-        setUserAnswer('');
-        setLoading(false);
-    }, [userAnswer, activeQuestionIndex, mockInterviewQuestion, interviewData, onAnswerSaved, setAnsweredQuestions, user?.primaryEmailAddress?.emailAddress]); // Added user email dependency
+    }, [userAnswer, activeQuestionIndex, mockInterviewQuestion, interviewData, onAnswerSaved, setAnsweredQuestions, user?.primaryEmailAddress?.emailAddress]);
 
     useEffect(() => {
         if (!isRecording && userAnswer.length > 0) {
