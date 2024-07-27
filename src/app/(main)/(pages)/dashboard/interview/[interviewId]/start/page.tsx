@@ -59,6 +59,11 @@ const StartInterview = ({ params }: Props) => {
     }, [activeQuestionIndex]);
 
     const handleClick = () => {
+        // Clear localStorage
+        localStorage.removeItem('activeQuestionIndex');
+        localStorage.removeItem('answeredQuestions');
+        
+        // Navigate to feedback page
         transitionTo('/dashboard/interview/' + interviewData?.mockId + '/feedback');
     };
 
