@@ -24,17 +24,21 @@ const Feedback = ({ params }: { params: { interviewId: string } }) => {
   };
 
   useEffect(() => {
-    const GetFeedback = async () => {
-      const result = await db.select()
-        .from(UserAnswer)
-        .where(eq(UserAnswer.mockIdRef, params.interviewId))
-        .orderBy(UserAnswer.id);
-      
-      console.log(result);
-      setFeedbackList(result);
+    const fetchFeedback = async () => {
+      try {
+        const response = await fetch(`/api/feedback?interviewId=${params.interviewId}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch feedback');
+        }
+        const data = await response.json();
+        setFeedbackList(data);
+      } catch (error) {
+        console.error('Error fetching feedback:', error);
+        // Optionally, set an error state here to display to the user
+      }
     };
 
-    GetFeedback();
+    fetchFeedback();
   }, [params.interviewId]);
 
   return (
