@@ -2361,8 +2361,65 @@ Build errors
     modify src\app\(main)\(pages)\dashboard\page.tsx and src\app\(main)\(pages)\dashboard\_components\add-new-interview.tsx to fetch and post data from api route
     not just those guys, basically every singe function calling from the database needs to go through the api routes
         [interviewId]/page
-        
+        basically all pages that interact with dashboard and create route for each of them
+        complete for interview list
+            should be show empty when no interview
+            should not ahow another user's, or should idk
+        should not render end interview button till recorded
+        persistent record should wipe memory once feeback page has reached(maybe add it in the button)
 
+Landing Page
+    to style the landing page we need to modify src\app\page.tsx as it shows only a mode toggle and "Hello World"
+    now we are going to make it responsive so lets start with the mobile navbar
+    create src\components\layout\mobile-nav.tsx and paste in the code(explain each line) import all neccesary
+    import it into src\app\page.tsx
+    create src\components\layout\navbar.tsx
+    import it in src\app\page.tsx
+    create a main function between navbar and site footer in src\app\page.tsx
+    add new function nFormatter in src\lib\utils.ts
+    create src\components\sections\hero-landing.tsx
+    import it in src\app\page.tsx main
+    create src\components\sections\preview-landing.tsx
+    import it in src\app\page.tsx main fix up the image too
+    create src\components\sections\powered.tsx
+    import it in src\app\page.tsx main fix the icons
+    create src\components\sections\bentogrid.tsx
+    import it in src\app\page.tsx main fix the random user images
+    create src\components\sections\info-landing.tsx
+    import it in src\app\page.tsx main
+    create src\components\sections\features.tsx
+    import it in src\app\page.tsx main customize it
+    create src\components\sections\testimonials.tsx
+    import it in src\app\page.tsx main comment it out till comments on linkedin and hashnode
+
+
+
+
+    #WIP 
+        set link to hashnode blog in src\components\layout\site-footer.tsx
+        set NewsLetterForm to hashnode's in same page
+        change logo in src\components\shared\icons.tsx
+        change x icon to youtube in src\components\sections\hero-landing.tsx
+        fix text gradient in src\components\sections\hero-landing.tsx
+        fix up Github star logic in src\components\sections\hero-landing.tsx
+        set source image at src\components\sections\preview-landing.tsx
+        customize icons in src\components\sections\powered.tsx
+            replace authjs with clerk
+            prisma with dribble
+            resend with Aceternity
+        replace random user images in src\components\sections\bentogrid.tsx
+        customize info in src\config\landing.ts
+        customize base color from purple to mockree blue
+        customize src\components\sections\features.tsx
+        uncomment testimonials after feedback on hashnode
+        customize user image in src\config\landing.ts testimonials
+
+
+
+
+    
+
+    
 
 
 
