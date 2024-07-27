@@ -25,6 +25,7 @@ const InterviewItemCard = ({ interview }: Props) => {
                 return (
                     <p>
                         <h2 className="font-bold text-black dark:text-white">Created At: {interview.createdAt}</h2>
+                        <h2 className="font-bold text-black dark:text-white">Created At: {interview.createdBy}</h2>
                         <h2 className="font-bold text-black dark:text-white">Starting this Interview again may not provide the same questions as before</h2>
                     </p>
                 );
