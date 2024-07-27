@@ -22,6 +22,10 @@ const FormSchema = z.object({
     }),
 });
 
+const handleClick = () => {
+    window.open('https://9thtech.hashnode.dev/newsletter', '_blank');
+};
+
 export function NewsletterForm() {
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -39,6 +43,7 @@ export function NewsletterForm() {
                 </pre>
             ),
         });
+        handleClick();
     }
 
     return (
