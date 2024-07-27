@@ -65,7 +65,7 @@ const StartInterview = ({ params }: Props) => {
     useEffect(() => {
         const fetchInterviewDetails = async () => {
             try {
-                const response = await fetch(`/api/interviews/${params.interviewId}/details`);
+                const response = await fetch(`/api/interviews/${params.interviewId}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch interview details');
                 }
