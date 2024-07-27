@@ -93,7 +93,7 @@ const RecordAnswer: React.FC<RecordAnswerProps> = ({ mockInterviewQuestion, acti
 
         setLoading(true);
         try {
-            const response = await axios.post('api/interviews/feedback', {
+            const response = await axios.post('/api/interviews/feedback', {
                 type: 'generate_feedback',
                 prompt: `Question: ${mockInterviewQuestion[activeQuestionIndex]?.question}, User Answer: ${userAnswer}. Given the interview question and the user's answer, please provide: A rating (1-10) of the answer's quality and relevance to the question, Constructive feedback for improvement, Suggestions for additional content or clarification. Format the response as a JSON object with fields for 'rating', 'feedback', 'strengths', and 'improvements'. Limit the total response to 3-5 concise sentences`,
             });

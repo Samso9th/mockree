@@ -5,13 +5,7 @@ export async function POST(req: Request) {
   try {
     const { prompt, type } = await req.json();
 
-    if (type === 'generate_questions') {
-      // Existing logic for generating interview questions
-      const response = await chatSession.sendMessage(prompt);
-      const content = response.response.text();
-      return NextResponse.json({ content });
-    } else if (type === 'generate_feedback') {
-      // New logic for generating answer feedback
+    if (type === 'generate_feedback') {
       const response = await chatSession.sendMessage(prompt);
       const content = response.response.text();
       
@@ -27,7 +21,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid request type' }, { status: 400 });
     }
   } catch (error) {
-    console.error('Error in generate-interview route:', error);
+    console.error('Error in generate-feedback route:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
