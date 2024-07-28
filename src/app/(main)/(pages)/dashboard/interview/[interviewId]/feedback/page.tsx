@@ -51,7 +51,7 @@ const Feedback = ({ params }: { params: { interviewId: string } }) => {
       </h2>
       <h2 className='text-[#1c4b82] text-lg my-3'>
         Overall Rating: <strong>
-          70%
+          {((feedbackList.reduce((acc, item) => acc + item.rating, 0) / (Number(process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT) || 5)) * 10).toFixed(2)}%
         </strong>
       </h2>
       <h2 className='text-sm text-gray-700'>
