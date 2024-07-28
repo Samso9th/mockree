@@ -45,8 +45,8 @@ const logos = [
       <Image
         src="/drizzle.png"
         alt="Drizzle ORM"
-        height={1500}
-        width={1500}
+        height={15}
+        width={700}
         // className="h-15 w-auto"
 
       />
