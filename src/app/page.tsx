@@ -25,7 +25,7 @@ export default function Home() {
           <Powered />
           <BentoGrid />
           <InfoLanding data={infos[0]} reverse={true} />
-          <InfoLanding data={infos[1]} />
+          {/* <InfoLanding data={infos[1]} /> */}
           <Features />
           {/* <Testimonials /> */}
         </>

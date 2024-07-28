@@ -2,14 +2,14 @@ import { FeatureLdg, InfoLdg, TestimonialType } from "@/types";
 
 export const infos: InfoLdg[] = [
   {
-    title: "Empower your projects",
+    title: "Practice Industry Standard Questions",
     description:
-      "Unlock the full potential of your projects with our open-source SaaS platform. Collaborate seamlessly, innovate effortlessly, and scale limitlessly.",
+      "Practice Industry Standard Questions with our cutting-edge technology, ensuring you're always ahead of the curve.",
     image: "/_static/work-from-home.jpg",
     list: [
       {
-        title: "Collaborative",
-        description: "Work together with your team members in real-time.",
+        title: "Collaborative Codebase",
+        description: "CMake our app better by contributing to the codebase.",
         icon: "laptop",
       },
       {
@@ -56,43 +56,43 @@ export const features: FeatureLdg[] = [
   {
     title: "Feature 1",
     description:
-      "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente.",
-    link: "/",
+      "Built with the latest and greatest SSR Next.js has to offer",
+    link: "/dashboard",
     icon: "nextjs",
   },
   {
     title: "Feature 2",
     description:
-      "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente.",
-    link: "/",
+      "Sign In with your Google Account, no verification required.",
+    link: "/dashboard",
     icon: "google",
   },
   {
     title: "Feature 3",
     description:
-      "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente.",
-    link: "/",
+      "Sign In with Github Account.",
+    link: "/dashboard",
     icon: "gitHub",
   },
   {
     title: "Feature 4",
     description:
-      "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente.",
-    link: "/",
+      "Practice past questions answered by other users.",
+    link: "/dashboard",
     icon: "laptop",
   },
   {
     title: "Feature 5",
     description:
-      "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente.",
-    link: "/",
+      "Learn more using AI.",
+    link: "/dashboard",
     icon: "user",
   },
   {
     title: "Feature 6",
     description:
-      "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente.",
-    link: "/",
+      "Clone Repo and run locally with your own personally trained models.",
+    link: "/dashboard",
     icon: "copy",
   },
 ];
