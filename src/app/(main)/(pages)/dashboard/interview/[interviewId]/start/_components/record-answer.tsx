@@ -80,8 +80,6 @@ const RecordAnswer: React.FC<RecordAnswerProps> = ({ mockInterviewQuestion, acti
     }
 
     const UpdateUserAnswer = useCallback(async () => {
-        console.log("Current answer:", userAnswer);
-        console.log("Current answer length:", userAnswer.length);
 
         if (userAnswer.length < 10) {
             setLoading(false);
