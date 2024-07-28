@@ -140,7 +140,7 @@ const InterviewItemCard = ({ interview }: Props) => {
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 2 }}
                                         exit={{ opacity: 0 }}
-                                        href={active.ctbLink}
+                                        onClick={active.ctbLink}
                                         target="_blank"
                                         className="px-4 py-3 text-sm rounded-full font-bold bg-[#1c4b82] text-white"
                                     >
@@ -151,7 +151,7 @@ const InterviewItemCard = ({ interview }: Props) => {
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         exit={{ opacity: 0 }}
-                                        href={active.ctaLink}
+                                        onClick={active.ctaLink}
                                         target="_blank"
                                         className="px-4 py-3 text-sm rounded-full font-bold bg-[#1c4b82] text-white"
                                     >
