@@ -141,7 +141,7 @@ const InterviewItemCard = ({ interview }: Props) => {
                                         exit={{ opacity: 0 }}
                                         onClick={active.ctbLink}
                                         target="_blank"
-                                        className="px-4 py-3 w-full cursor-pointer text-sm rounded-full font-bold bg-[#1c4b82] text-white"
+                                        className="px-4 py-3 cursor-pointer text-sm rounded-full font-bold bg-[#1c4b82] text-white"
                                     >
                                         {active.ctbText}
                                     </motion.a>
@@ -152,7 +152,7 @@ const InterviewItemCard = ({ interview }: Props) => {
                                         exit={{ opacity: 0 }}
                                         onClick={active.ctaLink}
                                         target="_blank"
-                                        className="px-4 py-3 w-full cursor-pointer text-sm rounded-full font-bold bg-[#1c4b82] text-white"
+                                        className="px-4 py-3 cursor-pointer text-sm rounded-full font-bold bg-[#1c4b82] text-white"
                                     >
                                         {active.ctaText}
                                     </motion.a>
