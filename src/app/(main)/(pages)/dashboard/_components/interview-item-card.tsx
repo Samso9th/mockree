@@ -5,6 +5,7 @@ import React, { useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import { MockInterview } from '../../../../../../utils/schema';
+import { useTransitionNavigation } from '@/lib/transition'
 
 type Props = {
     interview: typeof MockInterview.$inferSelect;
@@ -12,15 +13,23 @@ type Props = {
 
 const InterviewItemCard = ({ interview }: Props) => {
 
+    const { transitionTo } = useTransitionNavigation();
+    const handleFeedbackClick = () => {
+        transitionTo(`/dashboard/interview/${interview?.mockId}/feedback`);
+    };
+    const handleStartClick = () => {
+        transitionTo(`/dashboard/interview/${interview?.mockId}/start`);
+    };
+
     const cards = [
         {
             description: `${interview?.jobExperience} ${Number(interview?.jobExperience) === 1 ? 'Year' : 'Years'} of Experience`,
             title: interview?.jobPosition,
             src: `/tch/tch${Math.floor(Math.random() * 14) + 1}.jpg`,
             ctaText: "Retake",
-            ctaLink: "https://ui.aceternity.com/templates",
+            ctaLink: handleStartClick,
             ctbText: "Feedback",
-            ctbLink: "https://ui.aceternity.com/templates",
+            ctbLink: handleFeedbackClick,
             content: (interview: typeof MockInterview.$inferSelect) => {
                 return (
                     <p>
