@@ -43,16 +43,16 @@ const Feedback = ({ params }: { params: { interviewId: string } }) => {
 
   return (
     <div className='p-10'>
-      <h2 className='text-3xl font-bold text-green-500'>
-        Well Done!
-      </h2>
-      <h2 className='font-bold text-2xl'>
-        Below are your Results and Feedback
-      </h2>
       {feedbackList?.length == 0 ?
         <h2 className='font-bold text-xl text-gray-500'>No Interview Feedback Record Found</h2>
         :
         <>
+          <h2 className='text-3xl font-bold text-green-500'>
+            Well Done!
+          </h2>
+          <h2 className='font-bold text-2xl'>
+            Below are your Results and Feedback
+          </h2>
           <h2 className='text-[#1c4b82] text-lg my-3'>
             Overall Rating: <strong>
               {((feedbackList.reduce((acc, item) => acc + item.rating, 0) / (Number(process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT) || 5)) * 10).toFixed(2)}%
