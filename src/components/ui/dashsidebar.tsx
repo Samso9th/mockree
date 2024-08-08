@@ -16,7 +16,7 @@ type Props = {}
 const DashSidebar = (props: Props) => {
     const { user } = useUser();
     const Content = {
-        author: user?.firstName || "User",
+        author: user?.fullName || "User",
         authorAvatar: user?.imageUrl || "/avatar.svg",
     };
     const links = [
