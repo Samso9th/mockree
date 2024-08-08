@@ -11,6 +11,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { UserButton } from '@clerk/nextjs'
+import { ModeToggle } from './mode-toggle'
 
 type Props = {}
 
@@ -44,6 +45,7 @@ const InfoBar = (props: Props) => {
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
+      <ModeToggle />
       <UserButton />
     </div>
   )

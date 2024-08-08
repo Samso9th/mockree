@@ -10,10 +10,16 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { ModeToggle } from "@/components/ui/mode-toggle";
+import { useUser } from "@clerk/nextjs";
 
 type Props = {}
 
 const DashSidebar = (props: Props) => {
+    const { user } = useUser();
+    const Content = {
+        author: user?.firstName || "User",
+        authorAvatar: user?.imageUrl || "/avatar.svg",
+    };
     const links = [
         {
             label: "Interviews",
@@ -51,7 +57,15 @@ const DashSidebar = (props: Props) => {
                                 ))}
                             </div>
                         </div>
-                        <ModeToggle />
+                        <div>
+                            <SidebarLink
+                                link={{
+                                    label: Content.author,
+                                    href: "#",
+                                    icon: Content.authorAvatar
+                                }}
+                            />
+                        </div>
                     </SidebarBody>
                 </div>
             </Sidebar>
