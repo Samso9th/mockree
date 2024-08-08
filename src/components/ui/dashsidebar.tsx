@@ -9,7 +9,7 @@ import {
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { useUser } from "@clerk/nextjs";
+import { UserButton, useUser } from "@clerk/nextjs";
 
 type Props = {}
 
@@ -62,13 +62,7 @@ const DashSidebar = (props: Props) => {
                                     label: Content.author,
                                     href: "#",
                                     icon: (
-                                        <Image
-                                            src={Content.authorAvatar}
-                                            alt={Content.author}
-                                            width={50}
-                                            height={50}
-                                            className="h-7 w-7 flex-shrink-0 rounded-full"
-                                        />
+                                        <UserButton />
                                     ),
                                 }}
                             />
