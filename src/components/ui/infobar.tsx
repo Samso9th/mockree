@@ -46,7 +46,6 @@ const InfoBar = (props: Props) => {
         </Tooltip>
       </TooltipProvider>
       <ModeToggle />
-      <UserButton />
     </div>
   )
 }
